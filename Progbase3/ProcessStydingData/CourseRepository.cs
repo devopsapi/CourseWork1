@@ -21,8 +21,8 @@ namespace ProcessStydingData
 
             command.CommandText =
             @"
-                INSERT INTO courses (title, description, professor, lectures, subscribers,rating,isPrivate ) 
-                VALUES ($title, $description, $professor, $lectures, $subscribers,$rating,$isPrivate );
+                INSERT INTO courses (title, description, professor, lectures, subscribers,rating,isPrivate,publishedAt ) 
+                VALUES ($title, $description, $professor, $lectures, $subscribers,$rating,$isPrivate,$publishedAt);
                 SELECT last_insert_rowid();
             ";
 
@@ -33,6 +33,7 @@ namespace ProcessStydingData
             command.Parameters.AddWithValue("$subscribers", course.amountOfSubscribers);
             command.Parameters.AddWithValue("$rating", course.rating);
             command.Parameters.AddWithValue("$isPrivate", course.isPrivate ? 1 : 0);
+            command.Parameters.AddWithValue("$publishedAt", course.publishedAt);
 
 
             int insertedId = (int)(long)command.ExecuteScalar();

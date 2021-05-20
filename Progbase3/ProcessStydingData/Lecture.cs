@@ -2,7 +2,7 @@ namespace ProcessStydingData
 {
     public class Lecture
     {
-        public int lessonNumber;
+        public int id;
         public string topic;
     }
 }

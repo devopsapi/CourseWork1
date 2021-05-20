@@ -14,9 +14,10 @@ namespace ProcessStydingData
 
         public string lectures;
         /*  public List<Lecture> lectures; */
-        public long amountOfSubscribers;
+        public int amountOfSubscribers;
         public double rating;
         public bool isPrivate;
         public double price;
+        public DateTime publishedAt;
     }
 }

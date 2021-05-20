@@ -23,13 +23,13 @@ namespace ProcessStydingData
 
             command.CommandText =
             @"
-                INSERT INTO lectures (topic, number)
-                VALUES ($topic, $number);
+                INSERT INTO lectures (topic)
+                VALUES ($topic);
                 SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("$topic", lecture.topic);
-            command.Parameters.AddWithValue("$number", lecture.lessonNumber);
+
 
             int insertedId = (int)(long)command.ExecuteScalar();
 
@@ -46,13 +46,10 @@ namespace ProcessStydingData
             SqliteCommand command = connection.CreateCommand();
             command.CommandText =
             @"
-                UPDATE lectures SET topic = $topic,number = $number,
-                WHERE id = $id
+                UPDATE lectures SET topic = $topic WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", lectureId);
             command.Parameters.AddWithValue("$topic", lecture.topic);
-            command.Parameters.AddWithValue("$number", lecture.lessonNumber);
-
 
             int nChanged = command.ExecuteNonQuery();
 
@@ -225,7 +222,6 @@ namespace ProcessStydingData
         {
             Lecture lecture = new Lecture();
             lecture.topic = reader.GetString(0);
-            lecture.lessonNumber = int.Parse(reader.GetString(1));
 
             return lecture;
         }
