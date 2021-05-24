@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using System;
-namespace ProcessStydingData
+namespace ProcessData
 {
     public class LectureRepository
     {
@@ -23,12 +23,13 @@ namespace ProcessStydingData
 
             command.CommandText =
             @"
-                INSERT INTO lectures (topic)
-                VALUES ($topic);
+                INSERT INTO lectures (topic,course_id)
+                VALUES ($topic,$course_id);
                 SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("$topic", lecture.topic);
+            command.Parameters.AddWithValue("$course_id", lecture.course_id);
 
 
             int insertedId = (int)(long)command.ExecuteScalar();
@@ -46,10 +47,11 @@ namespace ProcessStydingData
             SqliteCommand command = connection.CreateCommand();
             command.CommandText =
             @"
-                UPDATE lectures SET topic = $topic WHERE id = $id
+                UPDATE lectures SET topic = $topic, course_id = $course_id WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", lectureId);
             command.Parameters.AddWithValue("$topic", lecture.topic);
+            command.Parameters.AddWithValue("$course_id", lecture.course_id);
 
             int nChanged = command.ExecuteNonQuery();
 
@@ -154,8 +156,7 @@ namespace ProcessStydingData
 
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT COUNT(*) FROM lectures 
-                                    WHERE topic LIKE '%' || $searchValue || '%'
-                                    OR number LIKE '%' || $searchValue || '%'";
+                                    WHERE topic LIKE '%' || $searchValue || '%'";
             command.Parameters.AddWithValue("$searchValue", searchValue);
 
             int totalFound = (int)(long)command.ExecuteScalar();
@@ -185,7 +186,6 @@ namespace ProcessStydingData
 
             command.CommandText = @"SELECT * FROM lectures 
                                     WHERE topic LIKE '%' || $searchValue || '%'
-                                    OR number LIKE '%' || $searchValue || '%'
                                     LIMIT $skip,$countOfOut";
             command.Parameters.AddWithValue("$searchValue", searchValue);
             command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
@@ -221,9 +221,72 @@ namespace ProcessStydingData
         private static Lecture ReadLecture(SqliteDataReader reader)
         {
             Lecture lecture = new Lecture();
-            lecture.topic = reader.GetString(0);
+
+            lecture.id = reader.GetInt32(0);
+            lecture.topic = reader.GetString(1);
+            lecture.course_id = reader.GetInt32(2);
 
             return lecture;
+        }
+
+
+        public Lecture[] GetAllCourseLectures(int course_id)
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = @"SELECT * FROM lectures WHERE id = $course_id";
+            command.Parameters.AddWithValue("$course_id", course_id);
+
+            SqliteDataReader reader = command.ExecuteReader();
+
+            List<Lecture> lecturesList = ReadLectures(reader);
+
+            Lecture[] allUserLectures = new Lecture[lecturesList.Count];
+
+            lecturesList.CopyTo(allUserLectures);
+
+            reader.Close();
+
+            connection.Close();
+
+            return allUserLectures;
+        }
+
+
+        public int[] GetAllLecturesIds()
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = @"SELECT id FROM lectures";
+            SqliteDataReader reader = command.ExecuteReader();
+
+            List<int> idsList = GetListOfIds(reader);
+
+            reader.Close();
+
+            connection.Close();
+
+            int[] ids = new int[idsList.Count];
+            idsList.CopyTo(ids);
+
+            return ids;
+        }
+
+
+        private static List<int> GetListOfIds(SqliteDataReader reader)
+        {
+            List<int> list = new List<int>();
+
+            while (reader.Read())
+            {
+                list.Add(reader.GetInt32(0));
+            }
+
+            return list;
         }
     }
 }

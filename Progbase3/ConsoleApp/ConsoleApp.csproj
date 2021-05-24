@@ -1,11 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\ProcessStydingData\ProcessStydingData.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <ProjectReference Include="..\ProcessData\ProcessData.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
