@@ -1,3 +1,5 @@
+using System;
+
 namespace ProcessData
 {
     public class Lecture
@@ -5,6 +7,13 @@ namespace ProcessData
         public int id;
         public Course course;
         public string topic;
-        public int course_id;
+        public string description;
+        public string duration;
+        public int courseId;
+
+        public override string ToString()
+        {
+            return $"{this.topic}";
+        }
     }
 }

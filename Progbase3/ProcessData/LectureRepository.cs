@@ -23,13 +23,15 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO lectures (topic,course_id)
-                VALUES ($topic,$course_id);
+                INSERT INTO lectures (topic,description,duration,course_id)
+                VALUES ($topic,$description,$duration,$course_id);
                 SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("$topic", lecture.topic);
-            command.Parameters.AddWithValue("$course_id", lecture.course_id);
+            command.Parameters.AddWithValue("$description", lecture.description);
+            command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$course_id", lecture.courseId);
 
 
             int insertedId = (int)(long)command.ExecuteScalar();
@@ -47,11 +49,14 @@ namespace ProcessData
             SqliteCommand command = connection.CreateCommand();
             command.CommandText =
             @"
-                UPDATE lectures SET topic = $topic, course_id = $course_id WHERE id = $id
+                UPDATE lectures SET topic = $topic, description = $description,
+                duration = $duration, course_id = $course_id WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", lectureId);
             command.Parameters.AddWithValue("$topic", lecture.topic);
-            command.Parameters.AddWithValue("$course_id", lecture.course_id);
+            command.Parameters.AddWithValue("$description", lecture.description);
+            command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$course_id", lecture.courseId);
 
             int nChanged = command.ExecuteNonQuery();
 
@@ -91,6 +96,78 @@ namespace ProcessData
             return isDeleted;
         }
 
+
+        public int InsertImport(Lecture lecture)
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText =
+            @"
+                INSERT INTO lectures (id,topic,description,duration,course_id,) VALUES ($id, $topic,$description,$duration,$course_id);
+                SELECT last_insert_rowid();
+            ";
+
+            command.Parameters.AddWithValue("$id", lecture.id);
+            command.Parameters.AddWithValue("$topic", lecture.topic);
+            command.Parameters.AddWithValue("$description", lecture.description);
+            command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$course_id", lecture.courseId);
+
+            int insertedId = (int)(long)command.ExecuteScalar();
+
+            connection.Close();
+
+            return insertedId;
+        }
+
+        public bool LectureExists(int lectureId)
+        {
+            Lecture lecture = new Lecture();
+
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = @"SELECT COUNT(*) FROM lectures WHERE id = $lectureId";
+            command.Parameters.AddWithValue("$lectureId", lectureId);
+
+            int countOfFound = (int)(long)command.ExecuteScalar();
+
+            bool isExists = false;
+
+            if (countOfFound != 0)
+            {
+                isExists = true;
+            }
+
+            connection.Close();
+
+            return isExists;
+        }
+
+
+        public Lecture[] GetAll()
+        {
+            List<Lecture> list = new List<Lecture>();
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM courses";
+            SqliteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Lecture lecture = ReadLecture(reader);
+                list.Add(lecture);
+            }
+
+            Lecture[] allLectures = new Lecture[list.Count];
+            list.CopyTo(allLectures);
+
+            return allLectures;
+        }
 
 
         public int GetTotalPages(int pageSize)
@@ -224,7 +301,9 @@ namespace ProcessData
 
             lecture.id = reader.GetInt32(0);
             lecture.topic = reader.GetString(1);
-            lecture.course_id = reader.GetInt32(2);
+            lecture.description = reader.GetString(2);
+            lecture.duration = reader.GetString(3);
+            lecture.courseId = reader.GetInt32(4);
 
             return lecture;
         }
@@ -236,7 +315,7 @@ namespace ProcessData
 
             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"SELECT * FROM lectures WHERE id = $course_id";
+            command.CommandText = @"SELECT * FROM lectures WHERE course_id = $course_id";
             command.Parameters.AddWithValue("$course_id", course_id);
 
             SqliteDataReader reader = command.ExecuteReader();

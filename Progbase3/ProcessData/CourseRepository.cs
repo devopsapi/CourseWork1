@@ -21,8 +21,8 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO courses (title, description, author, subscribers, rating, isPrivate,publishedAt, user_id) 
-                VALUES ($title, $description, $author,$subscribers,$rating,$isPrivate,$publishedAt,$user_id);
+                INSERT INTO courses (title, description, author, subscribers,price, rating, isPrivate,publishedAt, user_id) 
+                VALUES ($title, $description, $author,$subscribers,$price,$rating,$isPrivate,$publishedAt,$user_id);
                 SELECT last_insert_rowid();
             ";
 
@@ -30,10 +30,11 @@ namespace ProcessData
             command.Parameters.AddWithValue("$description", course.description);
             command.Parameters.AddWithValue("$author", course.author);
             command.Parameters.AddWithValue("$subscribers", course.amountOfSubscribers);
+            command.Parameters.AddWithValue("$price", course.price);
             command.Parameters.AddWithValue("$rating", course.rating);
             command.Parameters.AddWithValue("$isPrivate", course.isPrivate ? 1 : 0);
             command.Parameters.AddWithValue("$publishedAt", course.publishedAt);
-            command.Parameters.AddWithValue("$user_id", course.user_id);
+            command.Parameters.AddWithValue("$user_id", course.userId);
 
 
             int insertedId = (int)(long)command.ExecuteScalar();
@@ -52,18 +53,20 @@ namespace ProcessData
             command.CommandText =
             @"
                 UPDATE courses SET title = $title,description = $description,
-                author = $author,subscribers = $subscribers,
-                rating = $rating,isPrivate = $isPrivate, 
-                user_id = $user_id WHERE id = $id
+                author = $author,subscribers = $subscribers,price = $price, 
+                rating = $rating, isPrivate = $isPrivate, publishedAt = $publishedAt,user_id = $user_id 
+                WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", courseId);
             command.Parameters.AddWithValue("$title", course.title);
             command.Parameters.AddWithValue("$description", course.description);
             command.Parameters.AddWithValue("$author", course.author);
             command.Parameters.AddWithValue("$subscribers", course.amountOfSubscribers);
+            command.Parameters.AddWithValue("$price", course.price);
             command.Parameters.AddWithValue("$rating", course.rating);
-            command.Parameters.AddWithValue("$isPrivate ", course.isPrivate ? 1 : 0);
-            command.Parameters.AddWithValue("$user_id", course.user_id);
+            command.Parameters.AddWithValue("$isPrivate", course.isPrivate ? 1 : 0);
+            command.Parameters.AddWithValue("$publishedAt", course.publishedAt);
+            command.Parameters.AddWithValue("$user_id", course.userId);
 
 
             int nChanged = command.ExecuteNonQuery();
@@ -81,14 +84,14 @@ namespace ProcessData
         }
 
 
-        public bool DeleteById(int id)
+        public bool DeleteById(int courseId)
         {
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
 
             command.CommandText = @"DELETE FROM courses WHERE id = $id";
-            command.Parameters.AddWithValue("$id", id);
+            command.Parameters.AddWithValue("$id", courseId);
 
             int deletedCount = command.ExecuteNonQuery();
 
@@ -104,6 +107,79 @@ namespace ProcessData
             return isDeleted;
         }
 
+
+        public int InsertImport(Course course)
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText =
+            @"
+                INSERT INTO courses (id, title, description,author,subscribers,price,rating,isPrivate,publishedAt, user_id) 
+                VALUES ($id, $title, $description,$author,$subscribers,$price,$rating,$isPrivate,$publishedAt,$userId);
+
+                SELECT last_insert_rowid();
+            ";
+
+            command.Parameters.AddWithValue("$id", course.id);
+            command.Parameters.AddWithValue("$title", course.title);
+            command.Parameters.AddWithValue("$description", course.description);
+            command.Parameters.AddWithValue("$author", course.author);
+            command.Parameters.AddWithValue("$subscribers", course.amountOfSubscribers);
+            command.Parameters.AddWithValue("$price", course.price);
+            command.Parameters.AddWithValue("$rating", course.rating);
+            command.Parameters.AddWithValue("$isPrivate", course.isPrivate.ToString());
+            command.Parameters.AddWithValue("$publishedAt", course.publishedAt.ToString("o"));
+            command.Parameters.AddWithValue("$userId", course.userId);
+
+            int insertedId = (int)(long)command.ExecuteScalar();
+
+            connection.Close();
+
+            return insertedId;
+        }
+
+
+        public List<Course> GetAll()
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM courses";
+            SqliteDataReader reader = command.ExecuteReader();
+
+            List<Course> allCourses = ReadCourses(reader);
+
+            reader.Close();
+            connection.Close();
+            return allCourses;
+        }
+
+
+        public bool CourseExist(int courseId)
+        {
+
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = @"SELECT COUNT(*) FROM courses WHERE id = $courseId";
+            command.Parameters.AddWithValue("$courseId", courseId);
+
+            int countOfFound = (int)(long)command.ExecuteScalar();
+
+            bool isExists = false;
+
+            if (countOfFound != 0)
+            {
+                isExists = true;
+            }
+
+            connection.Close();
+
+            return isExists;
+        }
 
 
         public int GetTotalPages(int pageSize)
@@ -272,55 +348,71 @@ namespace ProcessData
         private static Course ReadCourse(SqliteDataReader reader)
         {
             Course course = new Course();
-            if (reader.Read())
-            {
+
+            /* if (reader.Read())
+            { */
                 course.id = reader.GetInt32(0);
                 course.title = reader.GetString(1);
                 course.description = reader.GetString(2);
                 course.author = reader.GetString(3);
                 course.amountOfSubscribers = reader.GetInt32(4);
-                course.rating = double.Parse(reader.GetString(5));
-                course.isPrivate = reader.GetBoolean(6);
-                course.publishedAt = DateTime.Parse(reader.GetString(7));
-                course.user_id = reader.GetInt32(8);
-            }
+                course.price = reader.GetDouble(5);
+                course.rating = reader.GetDouble(6);
+                course.isPrivate = reader.GetBoolean(7);
+                course.publishedAt = reader.GetDateTime(8);
+                course.userId = reader.GetInt32(9);
+          //  }
 
             return course;
         }
 
 
-        public Course[] GetAllUserCourses(int user_id)
+
+        public Course GetById(int id)
         {
             connection.Open();
-
             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"SELECT * FROM courses WHERE id = $user_id";
-            command.Parameters.AddWithValue("$user_id", user_id);
+            command.CommandText = @"SELECT * FROM courses WHERE id = $id";
+            command.Parameters.AddWithValue("$id", id);
 
             SqliteDataReader reader = command.ExecuteReader();
 
-            List<Course> coursesList = ReadCourses(reader);
-
-            Course[] allUserCourses = new Course[coursesList.Count];
-
-            coursesList.CopyTo(allUserCourses);
+            Course course = ReadCourse(reader);
 
             reader.Close();
 
             connection.Close();
 
-            return allUserCourses;
+            return course;
         }
 
-        public Course[] GetAllAuthorCourses(string author)
+
+
+        public Course[] GetAllUserCourses(List<int> coursesId)
+        {
+            List<Course> list = new List<Course>();
+
+            foreach (int i in coursesId)
+            {
+                list.Add(GetById(i));
+            }
+
+            Course[] courses = new Course[list.Count];
+            list.CopyTo(courses);
+
+            return courses;
+        }
+
+
+        public Course[] GetAllAuthorCourses(int userId)
         {
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"SELECT * FROM courses WHERE author = $author";
-            command.Parameters.AddWithValue("$author", author);
+            command.CommandText = @"SELECT * FROM courses WHERE user_id = $userId";
+            command.Parameters.AddWithValue("$userId", userId);
 
             SqliteDataReader reader = command.ExecuteReader();
 
@@ -338,13 +430,13 @@ namespace ProcessData
         }
 
 
-        public Course GetAllCourseLectures(int course_id)
+        public Course GetCourseWithAllLectures(int courseId)
         {
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM courses, lectures WHERE courses.id = $course_id AND lectures.course_id = $course_id";
-            command.Parameters.AddWithValue("$course_id", course_id);
+            command.Parameters.AddWithValue("$course_id", courseId);
 
             SqliteDataReader reader = command.ExecuteReader();
 
@@ -355,14 +447,14 @@ namespace ProcessData
             ReadFromCrossJoin(reader, course, ref lectures);
 
             course.lectures = lectures;
-        //    Console.WriteLine("Amount of lectures " + lectures.Length);
-/* 
-            Console.WriteLine("Course information");
+            //    Console.WriteLine("Amount of lectures " + lectures.Length);
+            /* 
+                        Console.WriteLine("Course information");
 
-            Console.WriteLine(course.id);
-            Console.WriteLine(course.title);
-            Console.WriteLine(course.description);
- */
+                        Console.WriteLine(course.id);
+                        Console.WriteLine(course.title);
+                        Console.WriteLine(course.description);
+             */
             reader.Close();
             connection.Close();
 
@@ -381,46 +473,25 @@ namespace ProcessData
                 course.description = reader.GetString(2);
                 course.author = reader.GetString(3);
                 course.amountOfSubscribers = reader.GetInt32(4);
-                course.rating = double.Parse(reader.GetString(5));
-                course.isPrivate = reader.GetBoolean(6);
-                course.publishedAt = DateTime.Parse(reader.GetString(7));
-                course.user_id = reader.GetInt32(8);
+                course.price = reader.GetDouble(5);
+                course.rating = double.Parse(reader.GetString(6));
+                course.isPrivate = reader.GetBoolean(7);
+                course.publishedAt = DateTime.Parse(reader.GetString(8));
+                course.userId = reader.GetInt32(9);
 
                 Lecture lecture = new Lecture();
 
-                lecture.id = reader.GetInt32(9);
-                lecture.topic = reader.GetString(10);
-                lecture.course_id = reader.GetInt32(11);
+                lecture.id = reader.GetInt32(10);
+                lecture.topic = reader.GetString(11);
+                lecture.description = reader.GetString(12);
+                lecture.duration = reader.GetString(13);
+                lecture.courseId = reader.GetInt32(14);
 
                 list.Add(lecture);
             }
 
             lectures = new Lecture[list.Count];
             list.CopyTo(lectures);
-        }
-        private Lecture[] ReadLecturesFromCrossJoin(SqliteDataReader reader)
-        {
-            List<Lecture> list = new List<Lecture>();
-            Lecture[] lectures;
-
-            while (reader.Read())
-            {
-                Lecture lecture = new Lecture();
-
-                lecture.id = reader.GetInt32(9);
-                lecture.topic = reader.GetString(10);
-                lecture.course_id = reader.GetInt32(11);
-
-                list.Add(lecture);
-                //    Console.WriteLine(lecture.id);
-            }
-
-            //      Console.WriteLine("Inside list lectures " + list.Count);
-
-            lectures = new Lecture[list.Count];
-            list.CopyTo(lectures);
-
-            return lectures;
         }
     }
 }

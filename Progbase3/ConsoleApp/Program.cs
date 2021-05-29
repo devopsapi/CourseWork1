@@ -12,6 +12,7 @@ namespace ConsoleApp
         static CourseRepository repoC;
         static LectureRepository repoL;
         static UserRepository repoU;
+        static UsersAndCoursesRepository repoUC;
         static void Main(string[] args)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -19,13 +20,53 @@ namespace ConsoleApp
             repoC = new CourseRepository(databasePath);
             repoL = new LectureRepository(databasePath);
             repoU = new UserRepository(databasePath);
+            repoUC = new UsersAndCoursesRepository(databasePath);
 
-            Course course = repoC.GetAllCourseLectures(20);
+            //  Console.WriteLine(repoC.GetAllUserCourses(repoUC.GetAllUserCoursesId(181)).Length.ToString());
 
-            for (int i = 0; i < course.lectures.Length; i++)
+            List<Course> list = new List<Course>(repoC.GetAllAuthorCourses(181));
+
+            foreach (Course c in list)
             {
-                Console.WriteLine(course.lectures[i].id);
+                Console.WriteLine(c.title);
             }
+
+            //   Console.WriteLine(repoC.GetAllUserCourses(repoUC.GetAllUserCoursesId(181)).Length);
+
+
+
+            /* 
+                        Course course = new Course();
+                        course.title = "new";
+                        course.description = "new";
+                        course.author = "new";
+                        course.amountOfSubscribers = 10;
+                        course.price = 1;
+                        course.rating = 4.0;
+                        course.isPrivate = false;
+                        course.publishedAt = DateTime.Now;
+
+                        repoC.Update(21, course);
+             */
+
+            //   Console.WriteLine(repoUC.isExists(181,21));
+
+
+
+
+
+            /*  Lecture[] alll = repoL.GetAllCourseLectures(21);
+
+             for (int i = 0; i < alll.Length; i++)
+             {
+                 Console.WriteLine(alll[i].topic);
+             }
+  */
+            /*  List<Course> allcourse = repoC.GetAll();
+             foreach (Course c in allcourse)
+             {
+                 Console.WriteLine(c.publishedAt);
+             } */
 
             /*  Course course = new Course();
              course.title = "new";
@@ -52,9 +93,8 @@ namespace ConsoleApp
              Console.WriteLine(repo.GetTotalPages(10)); */
 
             // GenerateCourses(10);
-            // GenerateLectures(10);
+            //   GenerateLectures(10);
             //  GenerateUsers(10);
-
 
 
         }
@@ -73,6 +113,9 @@ namespace ConsoleApp
         {
             int count = 0;
             List<Course> courses = new List<Course>();
+
+            int[] ids = repoU.GetAllUsersIds();
+
             StreamReader reader = new StreamReader(coursesCsvFile);
             string line = "";
             while ((line = reader.ReadLine()) != null)
@@ -97,7 +140,15 @@ namespace ConsoleApp
                     course.price = double.Parse(values[4]);
                     course.publishedAt = DateTime.Parse(values[5]);
                     course.isPrivate = bool.Parse(values[6]);
-                    course.user_id = random.Next(1, dataAmount + 1);
+
+                    if (ids == null)
+                    {
+                        course.userId = random.Next(1, dataAmount + 1);
+                    }
+                    else
+                    {
+                        course.userId = ids[random.Next(0, ids.Length)];
+                    }
 
                     courses.Add(course);
                     count++;
@@ -109,7 +160,7 @@ namespace ConsoleApp
 
         static void GenerateLectures(int dataAmount)
         {
-            string lecturesCsvFile = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/Lectures.txt";
+            string lecturesCsvFile = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/Lectures.csv";
             List<Lecture> generatedLectures = ReadLecturesFromCsv(lecturesCsvFile, dataAmount);
             foreach (Lecture c in generatedLectures)
             {
@@ -133,12 +184,26 @@ namespace ConsoleApp
 
                 Random random = new Random();
 
-                Lecture lecture = new Lecture();
-                lecture.topic = values[0];
-                int[] ids = repoC.GetAllCoursesIds();
-                lecture.course_id = ids[random.Next(0, ids.Length)];
-                lectures.Add(lecture);
-                count++;
+                if (values[0] != "topic")
+                {
+                    Lecture lecture = new Lecture();
+                    lecture.topic = values[0];
+                    lecture.description = values[1];
+                    lecture.duration = TimeSpan.FromSeconds(double.Parse(values[2])).ToString();
+                    int[] ids = repoC.GetAllCoursesIds();
+                    if (ids.Length == 0)
+                    {
+                        lecture.courseId = random.Next(0, dataAmount + 1);
+                    }
+                    else
+                    {
+                        lecture.courseId = ids[random.Next(0, ids.Length)];
+                    }
+
+
+                    lectures.Add(lecture);
+                    count++;
+                }
             }
             return lectures;
         }

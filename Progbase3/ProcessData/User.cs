@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ProcessData
 {
@@ -21,6 +22,8 @@ namespace ProcessData
         public bool isAuthor;
 
         public Users_Courses[] allUserCourses;
+
+        public Dictionary<Course, DateTime> daysOfSubscription = new Dictionary<Course, DateTime>();
 
 
         public User()

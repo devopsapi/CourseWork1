@@ -15,9 +15,13 @@ namespace ProcessData
         public double price;
         public DateTime publishedAt;
         public Lecture[] lectures;
-        public Users_Courses[] users_courses;
-        public int user_id;
+        public Users_Courses[] usersAndCourses;
+        public int userId;
         public User user;
 
+        public override string ToString()
+        {
+            return $" {this.title} ";
+        }
     }
 }
