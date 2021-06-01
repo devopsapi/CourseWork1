@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
+using TerminalGUIApp.Windows.UserWindow;
 
 namespace TerminalGUIApp
 {
-    public class MainWindow : Window
+    public class UserMainWindow : Window
     {
         private User currentUser;
         private MenuBar mainMenu;
         private MenuBar helpMenu;
         private MenuBar userAccountMenu;
         private CourseRepository courseRepository;
-        private LectureRepository LectureRepository;
+        private LectureRepository lectureRepository;
         private UserRepository userRepository;
         private UsersAndCoursesRepository usersAndCoursesRepository;
         private ListView allCoursesListView;
@@ -21,8 +22,14 @@ namespace TerminalGUIApp
         private int page = 1;
         private string searchValue = "";
         private bool selecting = false;
+        private Button prevPageBtn;
+        private Button nextPageBtn;
+        private Label pageLbl;
+        private Label totalPagesLbl;
+        private TextField searchInput;
+        private Label nullReferenceLbl = new Label();
 
-        public MainWindow()
+        public UserMainWindow()
         {
             mainMenu = new MenuBar(
                new MenuBarItem[]
@@ -82,11 +89,8 @@ namespace TerminalGUIApp
 
             //////////////////////////////////////
 
-            currentUser = new User();
 
             this.Title = "Online styding";
-
-            //   Rect frame = new Rect(2,8,100,50);
 
             allCoursesListView = new ListView(new List<Course>())
             {
@@ -94,6 +98,40 @@ namespace TerminalGUIApp
                 Height = Dim.Fill(),
             };
             allCoursesListView.OpenSelectedItem += OnOpenCourse;
+
+            prevPageBtn = new Button("Previous page")
+            {
+                X = Pos.Percent(35),
+                Y = Pos.Percent(10),
+            };
+            pageLbl = new Label("?")
+            {
+                X = Pos.Right(prevPageBtn) + Pos.Percent(3),
+                Y = Pos.Top(prevPageBtn),
+                Width = 3,
+            };
+
+            Label separateLbl = new Label("of")
+            {
+                X = Pos.Right(pageLbl) + Pos.Percent(2),
+                Y = Pos.Top(pageLbl),
+            };
+            totalPagesLbl = new Label("?")
+            {
+                X = Pos.Right(separateLbl) + Pos.Percent(3),
+                Y = Pos.Top(pageLbl),
+                Width = 3,
+            };
+            nextPageBtn = new Button("Next page")
+            {
+                X = Pos.Right(totalPagesLbl) + Pos.Percent(3),
+                Y = Pos.Top(prevPageBtn),
+            };
+            nextPageBtn.Clicked += OnNextPage;
+            prevPageBtn.Clicked += OnPrevPage;
+            this.Add(prevPageBtn, pageLbl, separateLbl, totalPagesLbl, nextPageBtn);
+
+
 
             frameView = new FrameView("Courses")
             {
@@ -113,31 +151,85 @@ namespace TerminalGUIApp
             };
             subscribe.Clicked += OnSubscribeClicked;
             this.Add(subscribe);
+        }
 
-            /*    Button createNewCourseBtn = new Button(2, 2, "Create new course");
-               createNewCourseBtn.Clicked += OnCreateButtonClicked;
-               this.Add(createNewCourseBtn); */
 
-            /*  Button editButton = new Button("Edit course");
-             editButton.Clicked += OnEditButtonClicked;
-             win.Add(editButton); */
+        private void OnNextPage()
+        {
+            int totalPages = this.courseRepository.GetSearchPagesCount(pageLength, searchValue);
+
+            if (page >= totalPages)
+            {
+                return;
+            }
+
+            this.page += 1;
+
+            UpdateCurrentPage();
+        }
+
+        private void OnPrevPage()
+        {
+            int totalPages = this.courseRepository.GetSearchPagesCount(pageLength, searchValue);
+
+            if (page == 1)
+            {
+                return;
+            }
+
+            this.page -= 1;
+
+            UpdateCurrentPage();
+        }
+
+
+        private void UpdateCurrentPage()
+        {
+            int totalPages = this.courseRepository.GetSearchPagesCount(pageLength, searchValue);
+
+            if (page > totalPages)
+            {
+                page = 1;
+            }
+
+            this.pageLbl.Text = page.ToString();
+            this.totalPagesLbl.Text = totalPages.ToString();
+
+            if (!selecting)
+            {
+                this.allCoursesListView.SetSource(this.courseRepository.GetSearchPage(searchValue, page, pageLength));
+
+                if (allCoursesListView.Source.ToList().Count == 0)
+                {
+                    nullReferenceLbl = new Label("No records found")
+                    {
+                        X = Pos.Percent(45),
+                        Y = Pos.Percent(50),
+                    };
+                    frameView.RemoveAll();
+                    frameView.Add(nullReferenceLbl);
+                }
+                else
+                {
+                    frameView.RemoveAll();
+                    frameView.Add(allCoursesListView);
+                }
+            }
+            else
+            {
+                selecting = false;
+            }
+
+
+            prevPageBtn.Visible = (page != 1);
+            nextPageBtn.Visible = (page! < totalPages);
         }
 
         private void OnInformationOpen()
         {
             InformationOpenDialog dialog = new InformationOpenDialog();
 
-            User test = new User();
-            test = new User();
-            test.id = 181;
-            test.username = "hello";
-            test.fullname = "Max Litva";
-            test.password = "1231231";
-            test.createdAt = DateTime.Now;
-            test.isAuthor = true;
-            test.imported = false;
-
-            dialog.SetUser(test);
+            dialog.SetUser(currentUser);
             dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository);
 
             Application.Run(dialog);
@@ -145,9 +237,9 @@ namespace TerminalGUIApp
 
         private void OnTeachingOpen()
         {
-            OnTeachingOpen dialog = new OnTeachingOpen();
+            TeachingOpenDialog dialog = new TeachingOpenDialog();
 
-            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository);
+            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository, lectureRepository);
 
             Application.Run(dialog);
 
@@ -155,7 +247,13 @@ namespace TerminalGUIApp
 
         private void OnStydingOpen()
         {
+            StydingOpenDialog dialog = new StydingOpenDialog();
 
+            dialog.SetUser(currentUser);
+
+            dialog.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository);
+
+            Application.Run(dialog);
         }
 
         private void OnQuit()
@@ -166,7 +264,6 @@ namespace TerminalGUIApp
         {
             MessageBox.Query("About program", "Course work project. Made by a student of KP-01 Yuliya Levitskaya, according to the lectures of the teacher Hadyniak Ruslan Anatoliiovych.", "Ok");
         }
-
         private void OnAllMenusClose()
         {
             MenuBar[] menus = new MenuBar[] { mainMenu, helpMenu };
@@ -240,19 +337,27 @@ namespace TerminalGUIApp
 
             OpenCourseDialog dialog = new OpenCourseDialog();
 
-
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
             dialog.SetCourse(course);
+            dialog.SetUser(this.currentUser);
+            dialog.CheckIfUserSubscribed();
 
             Application.Run(dialog);
+        }
+
+        public void SetUser(User user)
+        {
+            this.currentUser = user;
         }
 
         public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository)
         {
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
-            this.LectureRepository = lectureRepository;
+            this.lectureRepository = lectureRepository;
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
+            UpdateCurrentPage();
             allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
         }
     }

@@ -22,15 +22,10 @@ namespace ConsoleApp
             repoU = new UserRepository(databasePath);
             repoUC = new UsersAndCoursesRepository(databasePath);
 
-            //  Console.WriteLine(repoC.GetAllUserCourses(repoUC.GetAllUserCoursesId(181)).Length.ToString());
+//            Console.WriteLine(repoC.CheckIfUserIsCourseAuthor(182, 73));
 
-            List<Course> list = new List<Course>(repoC.GetAllAuthorCourses(181));
 
-            foreach (Course c in list)
-            {
-                Console.WriteLine(c.title);
-            }
-
+  
             //   Console.WriteLine(repoC.GetAllUserCourses(repoUC.GetAllUserCoursesId(181)).Length);
 
 

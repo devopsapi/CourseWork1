@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
 
@@ -6,7 +7,9 @@ namespace TerminalGUIApp
 {
     public class CreateCourseDialog : Dialog
     {
+        private List<Lecture> list = new List<Lecture>();
         public bool canceled;
+        private User user;
         protected TextField titleInput;
         protected TextField descriptionInput;
         protected DateField courseCreatedAtDateField;
@@ -21,7 +24,7 @@ namespace TerminalGUIApp
         {
             this.Title = "Create course";
 
-            Button canceledBtn = new Button("Canceled");
+            Button canceledBtn = new Button("Cancel");
             canceledBtn.Clicked += OnCreateDialogCanceled;
             this.AddButton(canceledBtn);
 
@@ -33,7 +36,6 @@ namespace TerminalGUIApp
             {
                 X = Pos.Percent(5),
                 Y = Pos.Percent(5),
-
             };
             titleInput = new TextField("")
             {
@@ -95,57 +97,47 @@ namespace TerminalGUIApp
             };
             this.Add(isPrivateLbl, isPrivateCheckBox);
 
+            Button addLectures = new Button("Create lectures");
+            addLectures.Clicked += OnCreateLecturesClicked;
+            this.AddButton(addLectures);
+        }
 
-            Label courseUserIdLbl = new Label("User id: ")
-            {
-                X = Pos.Left(titleLbl),
-                Y = Pos.Top(titleLbl) + Pos.Percent(50),
-            };
-            courseUserIdInput = new TextField("")
-            {
-                X = Pos.Left(titleInput),
-                Y = Pos.Top(courseUserIdLbl),
-                Width = Dim.Percent(25),
-            };
-            this.Add(courseUserIdLbl, courseUserIdInput);
+        private void OnCreateLecturesClicked()
+        {
+            CreateLectureDialog dialog = new CreateLectureDialog();
 
+            Application.Run(dialog);
 
-            Label courseCreatedAtLbl = new Label("CreatedAt: ")
+            if (!dialog.canceled)
             {
-                X = Pos.Left(titleLbl),
-                Y = Pos.Top(titleLbl) + Pos.Percent(60),
-            };
-            courseCreatedAtDateField = new DateField()
-            {
-                X = Pos.Left(titleInput),
-                Y = Pos.Top(courseCreatedAtLbl),
-                Width = Dim.Percent(25),
-                IsShortFormat = false,
-                ReadOnly = true,
-            };
-            this.Add(courseCreatedAtLbl, courseCreatedAtDateField);
+                Lecture newLecture = dialog.GetLecture();
+                if (newLecture != null)
+                {
+                    this.list.Add(newLecture);
+                }
+            }
+        }
+
+        public Lecture[] GetAllLectures()
+        {
+            Lecture[] allLectures = new Lecture[this.list.Count];
+            list.CopyTo(allLectures);
+            return allLectures;
         }
 
         public Course GetCourse()
         {
             double tryParsePrice;
-            int tryParseId;
 
-            if (titleInput.Text.ToString() == "" || descriptionInput.Text.ToString() == "" || authorInput.Text.ToString() == "" || courseUserIdInput.Text.ToString() == "")
+            if (titleInput.Text.ToString() == "" || descriptionInput.Text.ToString() == "" || authorInput.Text.ToString() == "")
             {
-                MessageBox.ErrorQuery("Creating course", "All fields must be filled", "Ok");
+                MessageBox.ErrorQuery("Course", "All fields must be filled", "OK");
                 return null;
             }
 
             if (!double.TryParse(priceInput.Text.ToString(), out tryParsePrice) || tryParsePrice < 0)
             {
                 MessageBox.ErrorQuery("Creating course", "Incorrect price value. Must be non-negative integer", "Ok");
-                return null;
-            }
-
-            if (!int.TryParse(courseUserIdInput.Text.ToString(), out tryParseId) || tryParseId < 0)
-            {
-                MessageBox.ErrorQuery("Creating course", "Incorrect userId value. Must be non-negative integer", "Ok");
                 return null;
             }
 
@@ -159,9 +151,14 @@ namespace TerminalGUIApp
             course.publishedAt = DateTime.Now;
             course.amountOfSubscribers = 0;
             course.rating = 0;
-            course.userId = int.Parse(courseUserIdInput.Text.ToString());
+            course.userId = this.user.id;
 
             return course;
+        }
+
+        public void SetUser(User user)
+        {
+            this.user = user;
         }
         private void OnCreateDialogCanceled()
         {
@@ -172,6 +169,12 @@ namespace TerminalGUIApp
 
         private void OnCreateDialogSubmit()
         {
+            if (this.list.Count == 0)
+            {
+                MessageBox.ErrorQuery("Create course", "Course munst have at least 1 lecture.Add lectures first", "OK");
+                return;
+            }
+
             this.canceled = false;
 
             Application.RequestStop();

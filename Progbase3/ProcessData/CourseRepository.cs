@@ -351,51 +351,71 @@ namespace ProcessData
 
             /* if (reader.Read())
             { */
-                course.id = reader.GetInt32(0);
-                course.title = reader.GetString(1);
-                course.description = reader.GetString(2);
-                course.author = reader.GetString(3);
-                course.amountOfSubscribers = reader.GetInt32(4);
-                course.price = reader.GetDouble(5);
-                course.rating = reader.GetDouble(6);
-                course.isPrivate = reader.GetBoolean(7);
-                course.publishedAt = reader.GetDateTime(8);
-                course.userId = reader.GetInt32(9);
-          //  }
+            course.id = reader.GetInt32(0);
+            course.title = reader.GetString(1);
+            course.description = reader.GetString(2);
+            course.author = reader.GetString(3);
+            course.amountOfSubscribers = reader.GetInt32(4);
+            course.price = reader.GetDouble(5);
+            course.rating = reader.GetDouble(6);
+            course.isPrivate = reader.GetBoolean(7);
+            course.publishedAt = reader.GetDateTime(8);
+            course.userId = reader.GetInt32(9);
+            //}
 
             return course;
         }
 
-
-
-        public Course GetById(int id)
+        public bool CheckIfUserIsCourseAuthor(int userId, int courseId)
         {
+            Course course = new Course();
+
             connection.Open();
+
             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"SELECT * FROM courses WHERE id = $id";
-            command.Parameters.AddWithValue("$id", id);
+            command.CommandText = @"SELECT COUNT(*) FROM courses WHERE id = $id AND user_id = $userId";
+            command.Parameters.AddWithValue("$id", courseId);
+            command.Parameters.AddWithValue("$userId", userId);
 
-            SqliteDataReader reader = command.ExecuteReader();
+            int nCount = (int)(long)command.ExecuteScalar();
 
-            Course course = ReadCourse(reader);
+            bool isAuthor = false;
 
-            reader.Close();
+            if (nCount != 0)
+            {
+                isAuthor = true;
+            }
 
             connection.Close();
 
-            return course;
+            return isAuthor;
         }
-
 
 
         public Course[] GetAllUserCourses(List<int> coursesId)
         {
             List<Course> list = new List<Course>();
 
-            foreach (int i in coursesId)
+            foreach (int id in coursesId)
             {
-                list.Add(GetById(i));
+                connection.Open();
+                SqliteCommand command = connection.CreateCommand();
+
+                command.CommandText = @"SELECT * FROM courses WHERE id = $id";
+                command.Parameters.AddWithValue("$id", id);
+
+                SqliteDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    Course course = ReadCourse(reader);
+                    list.Add(course);
+                }
+
+                reader.Close();
+
+                connection.Close();
             }
 
             Course[] courses = new Course[list.Count];
@@ -447,14 +467,7 @@ namespace ProcessData
             ReadFromCrossJoin(reader, course, ref lectures);
 
             course.lectures = lectures;
-            //    Console.WriteLine("Amount of lectures " + lectures.Length);
-            /* 
-                        Console.WriteLine("Course information");
 
-                        Console.WriteLine(course.id);
-                        Console.WriteLine(course.title);
-                        Console.WriteLine(course.description);
-             */
             reader.Close();
             connection.Close();
 

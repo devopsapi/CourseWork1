@@ -11,6 +11,7 @@ namespace TerminalGUIApp
         protected TextField descriptionInput;
         protected TextField duration;
         protected TextField courseIdInput;
+        protected Label courseUserIdLbl;
 
         public CreateLectureDialog()
         {
@@ -63,28 +64,43 @@ namespace TerminalGUIApp
             };
             this.Add(durationLbl, duration);
 
-
-            Label courseUserIdLbl = new Label("User id: ")
-            {
-                X = Pos.Left(topicLbl),
-                Y = Pos.Top(topicLbl) + Pos.Percent(30),
-            };
-            courseIdInput = new TextField("")
-            {
-                X = Pos.Left(topicInput),
-                Y = Pos.Top(courseUserIdLbl),
-                Width = Dim.Percent(25),
-            };
-            this.Add(courseUserIdLbl, courseIdInput);
+            /* 
+                        courseUserIdLbl = new Label("Course id: ")
+                        {
+                            X = Pos.Left(topicLbl),
+                            Y = Pos.Top(topicLbl) + Pos.Percent(30),
+                        };
+                        courseIdInput = new TextField("")
+                        {
+                            X = Pos.Left(topicInput),
+                            Y = Pos.Top(courseUserIdLbl),
+                            Width = Dim.Percent(25),
+                        };
+                        this.Add(courseUserIdLbl, courseIdInput); */
         }
 
         public Lecture GetLecture()
         {
             Lecture lecture = new Lecture();
-            lecture.topic = topicInput.Text.ToString();
-            lecture.description = descriptionInput.Text.ToString();
-            lecture.duration = duration.Text.ToString();
-          //  lecture.course_id = 
+            TimeSpan tryParseTime;
+
+            if (this.topicInput.Text == "" || this.descriptionInput.Text == "" || this.duration.Text == "")
+            {
+                MessageBox.ErrorQuery("Create lecture", "All fields must be filled", "OK");
+                return null;
+            }
+            else if (!TimeSpan.TryParse(this.duration.Text.ToString(), out tryParseTime))
+            {
+                MessageBox.ErrorQuery("Create lecture", "Wrong time format", "OK");
+                return null;
+            }
+            else
+            {
+                lecture.topic = topicInput.Text.ToString();
+                lecture.description = descriptionInput.Text.ToString();
+                lecture.duration = duration.Text.ToString();
+            }
+
             return lecture;
         }
 
@@ -101,6 +117,5 @@ namespace TerminalGUIApp
 
             Application.RequestStop();
         }
-
     }
 }

@@ -1,15 +1,22 @@
 using System;
 using ProcessData;
 using Terminal.Gui;
+using TerminalGUIApp.Windows.LectureWindow;
 
 namespace TerminalGUIApp
 {
-    internal class OpenLectureDialog : Dialog
+    public class OpenLectureDialog : Dialog
     {
+        public bool edited;
+        public bool deleted;
+        protected Lecture lecture;
         protected TextField topicInput;
-        protected TextField lectureIdInput;
+        //      protected TextField lectureIdInput;
         protected TextField descriptionInput;
         protected TextField durationInput;
+        protected Button editBtn;
+
+        protected Button deleteBtn;
         public OpenLectureDialog()
         {
             this.Title = "Open lecture";
@@ -17,6 +24,17 @@ namespace TerminalGUIApp
             Button backBtn = new Button("Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
+
+
+            editBtn = new Button(60, 1, "Edit");
+            editBtn.Clicked += OnEditButtonClicked;
+            editBtn.Visible = false;
+            this.AddButton(editBtn);
+
+            deleteBtn = new Button(70, 1, "Delete");
+            deleteBtn.Clicked += OnDeleteButtonClicked;
+            deleteBtn.Visible = false;
+            this.AddButton(deleteBtn);
 
             Label topicLbl = new Label("Topic: ")
             {
@@ -61,29 +79,56 @@ namespace TerminalGUIApp
             };
             this.Add(durationLbl, durationInput);
 
-            Label lectureIdLbl = new Label("Lecture id:")
-            {
-                X = Pos.Left(topicLbl),
-                Y = Pos.Top(topicLbl) + Pos.Percent(30),
-            };
-            lectureIdInput = new TextField("")
-            {
-                X = Pos.Left(topicInput),
-                Y = Pos.Top(durationLbl),
-                Width = Dim.Percent(25),
-                ReadOnly = true,
-            };
-            this.Add(lectureIdLbl, lectureIdInput);
+        }
 
+        public void CheckIfLectureCanBeEditedAndDeleted(bool isEditedAndDeleted)
+        {
+            if (isEditedAndDeleted)
+            {
+                this.editBtn.Visible = true;
+                this.deleteBtn.Visible = true;
+            }
+        }
+
+        private void OnDeleteButtonClicked()
+        {
+            int index = MessageBox.Query("Delete", "Are you sure?", "NO", "YES");
+
+            if (index == 1)
+            {
+                this.deleted = true;
+                Application.RequestStop();
+            }
+        }
+        private void OnEditButtonClicked()
+        {
+            EditLectureDialog dialog = new EditLectureDialog();
+
+            dialog.SetLecture(this.lecture);
+
+            Application.Run(dialog);
+
+            if (!dialog.canceled)
+            {
+                Lecture editedLecture = dialog.GetLecture();
+                editedLecture.id = this.lecture.id;
+                this.edited = true;
+                this.SetLecture(editedLecture);
+            }
         }
         public void SetLecture(Lecture lecture)
         {
             this.topicInput.Text = lecture.topic;
             this.descriptionInput.Text = lecture.description;
             this.durationInput.Text = lecture.duration.ToString();
-            this.lectureIdInput.Text = lecture.id.ToString();
+
+            this.lecture = lecture;
         }
 
+        public Lecture GetLecture()
+        {
+            return this.lecture;
+        }
         private void OnCreateDialogSubmit()
         {
             Application.RequestStop();

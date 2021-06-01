@@ -66,13 +66,21 @@ namespace TerminalGUIApp
             {
                 MessageBox.ErrorQuery("Edit", "Username is already taken. Please choose another one.", "OK");
             }
+            if (this.usernameInput.Text.ToString() == "" || this.fullnameInput.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Edit", "All fields must be filled", "OK");
+            }
             else
             {
-                this.user.username = this.usernameInput.Text.ToString();
-                this.user.fullname = this.fullnameInput.Text.ToString();
+                if (this.usernameInput.Text.ToString() != "" || this.fullnameInput.Text.ToString() != "")
+                {
+                    this.user.username = this.usernameInput.Text.ToString();
+                    this.user.fullname = this.fullnameInput.Text.ToString();
 
-                this.edited = userRepository.Update(this.user.id, this.user);
+                    this.edited = userRepository.Update(this.user.id, this.user);
+                }
             }
+
             return this.user;
         }
 

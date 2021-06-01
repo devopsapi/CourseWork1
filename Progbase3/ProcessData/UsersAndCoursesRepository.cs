@@ -92,13 +92,14 @@ namespace ProcessData
             return isUpdated;
         }
 
-        public bool DeleteById(int id)
+        public bool Delete(int userId, int courseId)
         {
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"DELETE FROM users_courses WHERE id = $id";
-            command.Parameters.AddWithValue("$id", id);
+            command.CommandText = @"DELETE FROM users_courses WHERE user_id = $userId AND course_id = $courseId";
+            command.Parameters.AddWithValue("$userId", userId);
+            command.Parameters.AddWithValue("$courseId", courseId);
 
             int deletedCount = command.ExecuteNonQuery();
 
