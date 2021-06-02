@@ -344,14 +344,45 @@ namespace TerminalGUIApp
                     newCourse.id = courseRepository.Insert(newCourse);
 
                     allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
+
                 }
             }
         }
 
         private void OnSubscribeClicked()
         {
+            int courseIndex = this.allCoursesListView.SelectedItem;
 
+            if (courseIndex == -1)
+            {
+                return;
+            }
 
+            Course selectedCourse = (Course)this.allCoursesListView.Source.ToList()[courseIndex];
+
+            if (selectedCourse.isPrivate)
+            {
+                MessageBox.Query("Subscription", "You have no right to subscribe on this course", "OK");
+                return;
+            }
+
+            bool isExist = this.usersAndCoursesRepository.isExists(this.currentUser.id, selectedCourse.id);
+
+            if (isExist)
+            {
+                MessageBox.Query("Subscription", "You have already subscribed on this course", "OK");
+                return;
+            }
+
+            else
+            {
+                UsersAndCourses usersAndCourses = new UsersAndCourses();
+                usersAndCourses.userId = this.currentUser.id;
+                usersAndCourses.courseId = selectedCourse.id;
+                usersAndCourses.id = this.usersAndCoursesRepository.Insert(usersAndCourses);
+
+                MessageBox.Query("Subscription", "You have successfully subscribed on this course", "OK");
+            }
         }
 
         private void OnOpenCourse(ListViewItemEventArgs args)

@@ -222,7 +222,7 @@ namespace TerminalGUIApp
 
         private void OnUnSubsribedButton()
         {
-            MessageBox.Query("Unsubscription", "You have unsubscribed successfully", "OK");
+         //   MessageBox.Query("Unsubscription", "You have unsubscribed successfully", "OK");
 
             this.usersAndCoursesRepository.Delete(this.currentUser.id, this.course.id);
 
