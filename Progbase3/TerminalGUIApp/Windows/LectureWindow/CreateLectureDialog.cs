@@ -10,8 +10,8 @@ namespace TerminalGUIApp
         protected TextField topicInput;
         protected TextField descriptionInput;
         protected TextField duration;
-        protected TextField courseIdInput;
-        protected Label courseUserIdLbl;
+      /*   protected TextField courseIdInput;
+        protected Label courseUserIdLbl; */
 
         public CreateLectureDialog()
         {

@@ -7,8 +7,8 @@ namespace TerminalGUIApp
 {
     public class OpenCourseDialog : Dialog
     {
+        public bool canBeEditedAndDeleted;
         protected User currentUser;
-
         protected UserRepository userRepository;
         protected UsersAndCoursesRepository usersAndCoursesRepository;
         protected CourseRepository courseRepository;
@@ -29,25 +29,7 @@ namespace TerminalGUIApp
 
         public Button unsubscribed;
 
-        public void CheckIfUserSubscribed()
-        {
-            unsubscribed = new Button(60, 4, "Unsubscribe");
 
-            subscribe = new Button(60, 4, "Subscribe  ");
-
-            if (this.usersAndCoursesRepository.isExists(this.currentUser.id, this.course.id))
-            {
-                subscribe.Visible = false;
-                unsubscribed.Clicked += OnUnSubsribedButton;
-                this.AddButton(unsubscribed);
-            }
-            else
-            {
-                unsubscribed.Visible = false;
-                subscribe.Clicked += OnSubscribeClicked;
-                this.AddButton(subscribe);
-            }
-        }
 
 
         public OpenCourseDialog()
@@ -66,7 +48,7 @@ namespace TerminalGUIApp
             this.AddButton(backBtn);
 
             Button seeLecturesBtn = new Button(60, 1, "All lectures");
-            seeLecturesBtn.Clicked += OnSeeAllLecturesClicked;
+            seeLecturesBtn.Clicked += OnAllLecturesClicked;
             this.AddButton(seeLecturesBtn);
 
             /* subscribe = new Button(60, 4, "Subscribe");
@@ -214,7 +196,25 @@ namespace TerminalGUIApp
             this.Add(courseIdLbl, courseId);
         }
 
+        public void CheckIfUserSubscribed()
+        {
+            unsubscribed = new Button(60, 4, "Unsubscribe");
 
+            subscribe = new Button(60, 4, "Subscribe  ");
+
+            if (this.usersAndCoursesRepository.isExists(this.currentUser.id, this.course.id))
+            {
+                subscribe.Visible = false;
+                unsubscribed.Clicked += OnUnSubsribedButton;
+                this.AddButton(unsubscribed);
+            }
+            else
+            {
+                unsubscribed.Visible = false;
+                subscribe.Clicked += OnSubscribeClicked;
+                this.AddButton(subscribe);
+            }
+        }
         public void SetUser(User user)
         {
             this.currentUser = user;
@@ -229,9 +229,13 @@ namespace TerminalGUIApp
             CheckIfUserSubscribed();
         }
 
-        private void OnSeeAllLecturesClicked()
+        private void OnAllLecturesClicked()
         {
-            if (this.courseRepository.CheckIfUserIsCourseAuthor(this.currentUser.id, this.course.id))
+            if (canBeEditedAndDeleted)
+            {
+                subscribed = true;
+            }
+            else if (this.courseRepository.CheckIfUserIsCourseAuthor(this.currentUser.id, this.course.id))
             {
                 subscribed = true;
             }
@@ -248,6 +252,9 @@ namespace TerminalGUIApp
                 dialog.SetUser(this.currentUser);
                 dialog.SetCourse(this.course);
                 dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+
+                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+                dialog.SetLectureList(lectures);
 
                 Application.Run(dialog);
             }

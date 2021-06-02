@@ -6,6 +6,7 @@ namespace TerminalGUIApp
 {
     public class AllCourseLecturesDialog : Dialog
     {
+        public bool canBeEditedAndDeleted;
         private User user;
         private static string databasePath = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/database.db";
         private UserRepository userRepository;
@@ -53,13 +54,18 @@ namespace TerminalGUIApp
             this.lectureRepository = lectureRepository;
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
-            List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-            // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-            this.allLecturesListView.SetSource(lectures);
+            /*  List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+             // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
+             this.allLecturesListView.SetSource(lectures); */
         }
         public void SetUser(User user)
         {
             this.user = user;
+        }
+
+        public void SetLectureList(List<Lecture> lecturesList)
+        {
+            this.allLecturesListView.SetSource(lecturesList);
         }
 
         public void SetCourse(Course course)
@@ -67,14 +73,10 @@ namespace TerminalGUIApp
             this.course = course;
         }
 
-        /*  public void SetRepository(LectureRepository lectureRepository)
-         {
-             this.lectureRepository = lectureRepository;
+        private void OnCreateLecturesClicked(){
+            
+        }
 
-             List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-             // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-             this.allLecturesListView.SetSource(lectures);
-         } */
         private void OnOpenLecture(ListViewItemEventArgs args)
         {
             Lecture lecture = (Lecture)args.Value;
@@ -83,13 +85,21 @@ namespace TerminalGUIApp
 
             dialog.SetLecture(lecture);
 
-            dialog.CheckIfLectureCanBeEditedAndDeleted(courseRepository.CheckIfUserIsCourseAuthor(this.user.id, this.course.id));
+            if (this.canBeEditedAndDeleted)
+            {
+                dialog.CheckIfLectureCanBeEditedAndDeleted(true);
+            }
+            else
+            {
+                dialog.CheckIfLectureCanBeEditedAndDeleted(courseRepository.CheckIfUserIsCourseAuthor(this.user.id, this.course.id));
+            }
 
             Application.Run(dialog);
 
             if (dialog.edited)
             {
                 Lecture editedLecture = dialog.GetLecture();
+                editedLecture.courseId = this.course.id;
 
                 this.lectureRepository.Update(editedLecture.id, editedLecture);
 
@@ -101,6 +111,10 @@ namespace TerminalGUIApp
             else if (dialog.deleted)
             {
                 this.lectureRepository.DeleteById(lecture.id);
+
+                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+
+                this.allLecturesListView.SetSource(lectures);
             }
 
         }

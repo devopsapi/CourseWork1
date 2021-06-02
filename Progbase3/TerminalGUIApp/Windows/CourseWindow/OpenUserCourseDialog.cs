@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
 
@@ -16,6 +17,8 @@ namespace TerminalGUIApp.Windows.CourseWindow
             Button deleteBtn = new Button(70, 4, "Delete");
             deleteBtn.Clicked += OnDeleteBtn;
             this.AddButton(deleteBtn);
+
+            this.canBeEditedAndDeleted = true;
         }
 
         private void OnDeleteBtn()
@@ -33,6 +36,8 @@ namespace TerminalGUIApp.Windows.CourseWindow
             EditCourseDialog dialog = new EditCourseDialog();
 
             dialog.SetCourse(this.course);
+            List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+            dialog.SetLectureList(lectures);
 
             Application.Run(dialog);
 

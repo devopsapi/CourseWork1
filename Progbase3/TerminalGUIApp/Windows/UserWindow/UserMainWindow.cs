@@ -151,8 +151,36 @@ namespace TerminalGUIApp
             };
             subscribe.Clicked += OnSubscribeClicked;
             this.Add(subscribe);
+
+
+            ///////////////////
+
+            Label searchLbl = new Label("Seeking categories - ")
+            {
+                X = Pos.Percent(33),
+                Y = Pos.Percent(15),
+            };
+            Label chooseSearchColumn = new Label("Title / author - ")
+            {
+                X = Pos.Right(searchLbl),
+                Y = Pos.Top(searchLbl),
+            };
+            searchInput = new TextField()
+            {
+                X = Pos.Right(chooseSearchColumn) + Pos.Percent(1),
+                Y = Pos.Top(searchLbl),
+                Width = Dim.Percent(20),
+            };
+            searchInput.TextChanged += OnSearchChange;
+            this.Add(searchLbl, chooseSearchColumn, searchInput);
         }
 
+        private void OnSearchChange(NStack.ustring text)
+        {
+            searchValue = searchInput.Text.ToString();
+
+            UpdateCurrentPage();
+        }
 
         private void OnNextPage()
         {
@@ -243,6 +271,7 @@ namespace TerminalGUIApp
 
             Application.Run(dialog);
 
+            UpdateCurrentPage();
         }
 
         private void OnStydingOpen()

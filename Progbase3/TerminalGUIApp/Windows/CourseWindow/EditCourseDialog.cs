@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
 
@@ -9,6 +10,8 @@ namespace TerminalGUIApp
         public EditCourseDialog()
         {
             this.Title = "Edit course";
+           
+            this.allLectures.Visible = false;
         }
 
         public void SetCourse(Course course)

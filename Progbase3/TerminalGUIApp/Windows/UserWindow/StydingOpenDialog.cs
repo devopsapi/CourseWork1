@@ -17,6 +17,7 @@ namespace TerminalGUIApp.Windows.UserWindow
         private int page = 1;
         private string searchValue = "";
         private bool selecting = false;
+
         public StydingOpenDialog()
         {
             this.Title = "Styding";
@@ -46,7 +47,28 @@ namespace TerminalGUIApp.Windows.UserWindow
             frameView.Add(allCoursesListView);
             this.Add(frameView);
 
+            Button unsubscribed = new Button(30, 20, "Unsubscribed");
+            unsubscribed.Clicked += OnUnsubscribed;
+            this.AddButton(unsubscribed);
+        }
 
+        private void OnUnsubscribed()
+        {
+            int index = this.allCoursesListView.SelectedItem;
+
+            if (index == -1)
+            {
+                return;
+            }
+
+            Course selectedCourse = (Course)this.allCoursesListView.Source.ToList()[index];
+
+            this.usersAndCoursesRepository.Delete(this.currentUser.id, selectedCourse.id);
+
+            List<Course> courses = new List<Course>(this.courseRepository.GetAllUserCourses(this.usersAndCoursesRepository.GetAllUserCoursesId(this.currentUser.id)));
+
+            // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
+            allCoursesListView.SetSource(courses);
         }
 
         public void SetUser(User user)
@@ -80,7 +102,7 @@ namespace TerminalGUIApp.Windows.UserWindow
 
             dialog.SetCourse(course);
 
-            dialog.subscribe.Visible = false;
+            dialog.CheckIfUserSubscribed();
 
             Application.Run(dialog);
         }

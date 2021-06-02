@@ -46,10 +46,96 @@ namespace TerminalGUIApp
             frameView.Add(allCoursesListView);
             this.Add(frameView);
 
-            Button addCourse = new Button(40, 20, "Create new course");
-            addCourse.Clicked += OnCreateButtonClicked;
-            this.AddButton(addCourse);
+            Button addCourseBtn = new Button(20, 20, "Create course");
+            addCourseBtn.Clicked += OnCreateButtonClicked;
+            this.AddButton(addCourseBtn);
 
+            Button editCourseBtn = new Button(40, 20, "Edit course");
+            editCourseBtn.Clicked += OnEditClicked;
+            this.AddButton(editCourseBtn);
+
+            Button deleteCourseBtn = new Button(60, 20, "Delete course");
+            deleteCourseBtn.Clicked += OnDeleteButtonClicked;
+            this.AddButton(deleteCourseBtn);
+
+        }
+
+
+        private void OnDeleteButtonClicked()
+        {
+            int index = MessageBox.Query("Delete", "Are you sure?", "NO", "YES");
+
+            if (index == 0)
+            {
+                return;
+            }
+            else
+            {
+                int courseIndex = this.allCoursesListView.SelectedItem;
+
+                if (courseIndex == -1)
+                {
+                    return;
+                }
+
+                Course selectedCourse = (Course)this.allCoursesListView.Source.ToList()[courseIndex];
+
+                bool isDeleted = this.courseRepository.DeleteById(selectedCourse.id);
+
+                if (isDeleted)
+                {
+                    List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(user.id));
+                    allCoursesListView.SetSource(userCourses);
+                }
+
+                else
+                {
+                    MessageBox.ErrorQuery("Delete course", "Could not delete course", "OK");
+                }
+            }
+        }
+
+        private void OnEditClicked()
+        {
+            EditCourseDialog dialog = new EditCourseDialog();
+
+            int courseIndex = this.allCoursesListView.SelectedItem;
+
+            if (courseIndex == -1)
+            {
+                return;
+            }
+
+            Course selectedCourse = (Course)this.allCoursesListView.Source.ToList()[courseIndex];
+
+            List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(selectedCourse.id));
+
+            dialog.SetLectureList(lectures);
+            dialog.SetCourse(selectedCourse);
+            dialog.SetUser(this.user);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+
+            Application.Run(dialog);
+
+            if (!dialog.canceled)
+            {
+                Course editedCourse = dialog.GetCourse();
+                editedCourse.id = selectedCourse.id;
+                if (editedCourse != null)
+                {
+                    bool isUpdated = this.courseRepository.Update(editedCourse.id, editedCourse);
+
+                    if (isUpdated)
+                    {
+                        List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(user.id));
+                        allCoursesListView.SetSource(userCourses);
+                    }
+                    else
+                    {
+                        MessageBox.ErrorQuery("Edite course", "Could not edit course", "OK");
+                    }
+                }
+            }
         }
 
 
@@ -58,6 +144,7 @@ namespace TerminalGUIApp
             CreateCourseDialog dialog = new CreateCourseDialog();
 
             dialog.SetUser(this.user);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
 
             Application.Run(dialog);
 
@@ -69,7 +156,7 @@ namespace TerminalGUIApp
                     newCourse.id = this.courseRepository.Insert(newCourse);
 
                     Lecture[] allLectures = dialog.GetAllLectures();
-                    
+
                     foreach (Lecture l in allLectures)
                     {
                         l.courseId = newCourse.id;
