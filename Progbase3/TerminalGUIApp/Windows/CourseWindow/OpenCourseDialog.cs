@@ -26,11 +26,7 @@ namespace TerminalGUIApp
         public bool subscribed;
         public Button subscribe;
         protected Course course = new Course();
-
         public Button unsubscribed;
-
-
-
 
         public OpenCourseDialog()
         {
@@ -253,8 +249,8 @@ namespace TerminalGUIApp
                 dialog.SetCourse(this.course);
                 dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
 
-                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-                dialog.SetLectureList(lectures);
+              /*   List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+                dialog.SetLectureList(lectures); */
 
                 Application.Run(dialog);
             }

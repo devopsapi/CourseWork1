@@ -295,6 +295,141 @@ namespace ProcessData
 
 
 
+        public int GetSearchPagesCountByUserId(int pageSize, string searchValue, int userId)
+        {
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
+            }
+
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM courses 
+                                    WHERE user_id = $userId AND title LIKE '%' || $searchValue || '%'";
+            command.Parameters.AddWithValue("$userId", userId);
+            command.Parameters.AddWithValue("$searchValue", searchValue);
+
+            int totalFound = (int)(long)command.ExecuteScalar();
+
+            connection.Close();
+
+            int totalSearchPages = (int)Math.Ceiling((float)totalFound / (float)pageSize);
+
+            return totalSearchPages;
+        }
+
+
+        public List<Course> GetSearchPageByUserId(string searchValue, int pageNum, int pageSize, int userId)
+        {
+            if (pageNum < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page '{pageNum}' out of range");
+            }
+
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
+            }
+
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = @"SELECT * FROM courses 
+                                    WHERE user_id = $userId AND title LIKE '%' || $searchValue || '%'
+                                    LIMIT $skip,$countOfOut";
+            command.Parameters.AddWithValue("$userId", userId);
+            command.Parameters.AddWithValue("$searchValue", searchValue);
+            command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
+            command.Parameters.AddWithValue("$countOfOut", pageSize);
+
+            SqliteDataReader reader = command.ExecuteReader();
+
+            List<Course> searchPage = ReadCourses(reader);
+
+            reader.Close();
+
+            connection.Close();
+
+            return searchPage;
+        }
+
+
+        public int GetSearchPagesCountOfSubscibedCourses(List<int> coursesId, int pageSize, string searchValue)
+        {
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
+            }
+
+            int totalFound = 0;
+
+            foreach (int courseId in coursesId)
+            {
+                connection.Open();
+                SqliteCommand command = connection.CreateCommand();
+
+                command.CommandText = @"SELECT COUNT(*) FROM courses 
+                                    WHERE id = $courseId AND title LIKE '%' || $searchValue || '%'";
+                command.Parameters.AddWithValue("$courseId", courseId);
+                command.Parameters.AddWithValue("$searchValue", searchValue);
+
+                int count = (int)(long)command.ExecuteScalar();
+
+                totalFound += count;
+
+                connection.Close();
+            }
+
+            int totalSearchPages = (int)Math.Ceiling((float)totalFound / (float)pageSize);
+
+            return totalSearchPages;
+        }
+
+
+        public List<Course> GetSearchPageOfSubscribedCourses(List<int> coursesId, string searchValue, int pageNum, int pageSize)
+        {
+            if (pageNum < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page '{pageNum}' out of range");
+            }
+
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
+            }
+
+            List<Course> searchPage = new List<Course>();
+
+            foreach (int id in coursesId)
+            {
+                connection.Open();
+                SqliteCommand command = connection.CreateCommand();
+
+                command.CommandText = @"SELECT * FROM courses WHERE id = $id AND title LIKE '%' || $searchValue || '%' LIMIT $skip,$countOfOut";
+                command.Parameters.AddWithValue("$id", id);
+                command.Parameters.AddWithValue("$searchValue", searchValue);
+                command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
+                command.Parameters.AddWithValue("$countOfOut", pageSize);
+
+                SqliteDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    Course course = ReadCourse(reader);
+                    searchPage.Add(course);
+                }
+
+                reader.Close();
+
+                connection.Close();
+            }
+
+            return searchPage;
+        }
+
+
         private static List<Course> ReadCourses(SqliteDataReader reader)
         {
             List<Course> coursesList = new List<Course>();
@@ -452,6 +587,7 @@ namespace ProcessData
 
         public Course GetCourseWithAllLectures(int courseId)
         {
+
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();

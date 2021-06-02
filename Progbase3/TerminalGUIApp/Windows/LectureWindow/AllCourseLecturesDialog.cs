@@ -17,12 +17,73 @@ namespace TerminalGUIApp
         private FrameView frameView;
         private int pageLength = 10;
         private int page = 1;
+        private string searchValue = "";
+        private bool selecting = false;
+        private Button prevPageBtn;
+        private Button nextPageBtn;
+        private Label pageLbl;
+        private Label totalPagesLbl;
+        private TextField searchInput;
+        private Label nullReferenceLbl = new Label();
         private Course course;
         public AllCourseLecturesDialog()
         {
             lectureRepository = new LectureRepository(databasePath);
 
             this.Title = "All lectures";
+
+
+            prevPageBtn = new Button("Previous page")
+            {
+                X = Pos.Percent(35),
+                Y = Pos.Percent(10),
+            };
+            pageLbl = new Label("?")
+            {
+                X = Pos.Right(prevPageBtn) + Pos.Percent(3),
+                Y = Pos.Top(prevPageBtn),
+                Width = 3,
+            };
+
+            Label separateLbl = new Label("of")
+            {
+                X = Pos.Right(pageLbl) + Pos.Percent(2),
+                Y = Pos.Top(pageLbl),
+            };
+            totalPagesLbl = new Label("?")
+            {
+                X = Pos.Right(separateLbl) + Pos.Percent(3),
+                Y = Pos.Top(pageLbl),
+                Width = 3,
+            };
+            nextPageBtn = new Button("Next page")
+            {
+                X = Pos.Right(totalPagesLbl) + Pos.Percent(3),
+                Y = Pos.Top(prevPageBtn),
+            };
+            nextPageBtn.Clicked += OnNextPage;
+            prevPageBtn.Clicked += OnPrevPage;
+            this.Add(prevPageBtn, pageLbl, separateLbl, totalPagesLbl, nextPageBtn);
+
+
+            Label searchLbl = new Label("Seeking categories - ")
+            {
+                X = Pos.Percent(33),
+                Y = Pos.Percent(15),
+            };
+            Label chooseSearchColumn = new Label("Topic - ")
+            {
+                X = Pos.Right(searchLbl),
+                Y = Pos.Top(searchLbl),
+            };
+            searchInput = new TextField()
+            {
+                X = Pos.Right(chooseSearchColumn) + Pos.Percent(1),
+                Y = Pos.Top(searchLbl),
+                Width = Dim.Percent(20),
+            };
+            searchInput.TextChanged += OnSearchChange;
+            this.Add(searchLbl, chooseSearchColumn, searchInput);
 
 
             allLecturesListView = new ListView(new List<Lecture>())
@@ -54,9 +115,85 @@ namespace TerminalGUIApp
             this.lectureRepository = lectureRepository;
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
-            /*  List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-             // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-             this.allLecturesListView.SetSource(lectures); */
+            UpdateCurrentPage();
+         //  this.allLecturesListView.SetSource(this.lectureRepository.GetPage(page, pageLength, this.user.id));
+        }
+
+        private void OnSearchChange(NStack.ustring text)
+        {
+            searchValue = searchInput.Text.ToString();
+
+            UpdateCurrentPage();
+        }
+
+        private void OnNextPage()
+        {
+            int totalPages = this.lectureRepository.GetSearchPagesCount(pageLength, searchValue, this.course.id);
+
+            if (page >= totalPages)
+            {
+                return;
+            }
+
+            this.page += 1;
+
+            UpdateCurrentPage();
+        }
+
+        private void OnPrevPage()
+        {
+            int totalPages = this.courseRepository.GetSearchPagesCount(pageLength, searchValue);
+
+            if (page == 1)
+            {
+                return;
+            }
+
+            this.page -= 1;
+
+            UpdateCurrentPage();
+        }
+
+        private void UpdateCurrentPage()
+        {
+            int totalPages = this.lectureRepository.GetSearchPagesCount(pageLength, searchValue, this.course.id);
+
+            if (page > totalPages)
+            {
+                page = 1;
+            }
+
+            this.pageLbl.Text = page.ToString();
+            this.totalPagesLbl.Text = totalPages.ToString();
+
+            if (!selecting)
+            {
+                this.allLecturesListView.SetSource(this.lectureRepository.GetSearchPage(searchValue, page, pageLength, this.course.id));
+
+                if (allLecturesListView.Source.ToList().Count == 0)
+                {
+                    nullReferenceLbl = new Label("No records found")
+                    {
+                        X = Pos.Percent(45),
+                        Y = Pos.Percent(50),
+                    };
+                    frameView.RemoveAll();
+                    frameView.Add(nullReferenceLbl);
+                }
+                else
+                {
+                    frameView.RemoveAll();
+                    frameView.Add(allLecturesListView);
+                }
+            }
+            else
+            {
+                selecting = false;
+            }
+
+
+            prevPageBtn.Visible = (page != 1);
+            nextPageBtn.Visible = (page! < totalPages);
         }
         public void SetUser(User user)
         {
@@ -71,10 +208,6 @@ namespace TerminalGUIApp
         public void SetCourse(Course course)
         {
             this.course = course;
-        }
-
-        private void OnCreateLecturesClicked(){
-            
         }
 
         private void OnOpenLecture(ListViewItemEventArgs args)
@@ -103,18 +236,22 @@ namespace TerminalGUIApp
 
                 this.lectureRepository.Update(editedLecture.id, editedLecture);
 
-                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+                UpdateCurrentPage();
+                /* 
+                                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
 
-                this.allLecturesListView.SetSource(lectures);
+                                this.allLecturesListView.SetSource(lectures); */
             }
 
             else if (dialog.deleted)
             {
                 this.lectureRepository.DeleteById(lecture.id);
 
-                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+                UpdateCurrentPage();
+                /* 
+                                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
 
-                this.allLecturesListView.SetSource(lectures);
+                                this.allLecturesListView.SetSource(lectures); */
             }
 
         }

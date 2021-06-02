@@ -191,7 +191,7 @@ namespace ProcessData
             return totalPages;
         }
 
-        public List<Lecture> GetPage(int pageNum, int pageSize)
+        public List<Lecture> GetPage(int pageNum, int pageSize, int courseId)
         {
             if (pageNum < 1)
             {
@@ -207,7 +207,8 @@ namespace ProcessData
 
             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"SELECT * FROM lectures LIMIT $skip,$countOfOut";
+            command.CommandText = @"SELECT * FROM lectures WHERE course_id = $course_id LIMIT $skip,$countOfOut";
+            command.Parameters.AddWithValue("$course_id", courseId);
             command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
             command.Parameters.AddWithValue("$countOfOut", pageSize);
 
@@ -222,7 +223,7 @@ namespace ProcessData
             return page;
         }
 
-        public int GetSearchPagesCount(int pageSize, string searchValue)
+        public int GetSearchPagesCount(int pageSize, string searchValue, int courseId)
         {
             if (pageSize < 1)
             {
@@ -233,7 +234,8 @@ namespace ProcessData
 
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT COUNT(*) FROM lectures 
-                                    WHERE topic LIKE '%' || $searchValue || '%'";
+                                    WHERE course_id = $courseId AND topic LIKE '%' || $searchValue || '%'";
+            command.Parameters.AddWithValue("$courseId", courseId);
             command.Parameters.AddWithValue("$searchValue", searchValue);
 
             int totalFound = (int)(long)command.ExecuteScalar();
@@ -245,7 +247,7 @@ namespace ProcessData
             return totalSearchPages;
         }
 
-        public List<Lecture> GetSearchPage(string searchValue, int pageNum, int pageSize)
+        public List<Lecture> GetSearchPage(string searchValue, int pageNum, int pageSize, int courseId)
         {
             if (pageNum < 1)
             {
@@ -262,8 +264,9 @@ namespace ProcessData
             SqliteCommand command = connection.CreateCommand();
 
             command.CommandText = @"SELECT * FROM lectures 
-                                    WHERE topic LIKE '%' || $searchValue || '%'
+                                    WHERE course_id = $courseId AND topic LIKE '%' || $searchValue || '%'
                                     LIMIT $skip,$countOfOut";
+            command.Parameters.AddWithValue("$courseId", courseId);
             command.Parameters.AddWithValue("$searchValue", searchValue);
             command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
             command.Parameters.AddWithValue("$countOfOut", pageSize);

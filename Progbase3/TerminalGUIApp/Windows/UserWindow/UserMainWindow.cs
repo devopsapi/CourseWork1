@@ -344,7 +344,6 @@ namespace TerminalGUIApp
                     newCourse.id = courseRepository.Insert(newCourse);
 
                     allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-
                 }
             }
         }
@@ -418,7 +417,7 @@ namespace TerminalGUIApp
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
             UpdateCurrentPage();
-            allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
+         //   allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
         }
     }
 }
