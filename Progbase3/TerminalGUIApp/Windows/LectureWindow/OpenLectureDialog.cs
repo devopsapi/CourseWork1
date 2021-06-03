@@ -21,7 +21,7 @@ namespace TerminalGUIApp
         {
             this.Title = "Open lecture";
 
-            Button backBtn = new Button("Back");
+            Button backBtn = new Button(46, 30,"Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
 

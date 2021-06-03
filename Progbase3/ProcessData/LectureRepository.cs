@@ -154,7 +154,7 @@ namespace ProcessData
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM courses";
+            command.CommandText = @"SELECT * FROM lectures";
             SqliteDataReader reader = command.ExecuteReader();
 
             while (reader.Read())

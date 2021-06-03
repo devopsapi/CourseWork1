@@ -9,6 +9,7 @@ namespace TerminalGUIApp
     {
         protected User currentUser;
         private UserRepository userRepository;
+        protected TemporaryLectureRepository temporaryLectureRepository;
         protected UsersAndCoursesRepository usersAndCoursesRepository;
         protected CourseRepository courseRepository;
         protected LectureRepository lectureRepository;
@@ -187,18 +188,18 @@ namespace TerminalGUIApp
                     frameView.RemoveAll();
                     frameView.Add(nullReferenceLbl);
 
-                    addCourseBtn.Visible = false;
+                    /* addCourseBtn.Visible = false;
                     editCourseBtn.Visible = false;
-                    deleteCourseBtn.Visible = false;
+                    deleteCourseBtn.Visible = false; */
                 }
                 else
                 {
                     frameView.RemoveAll();
                     frameView.Add(allCoursesListView);
-
-                    addCourseBtn.Visible = true;
-                    editCourseBtn.Visible = true;
-                    deleteCourseBtn.Visible = true;
+                    /* 
+                                        addCourseBtn.Visible = true;
+                                        editCourseBtn.Visible = true;
+                                        deleteCourseBtn.Visible = true; */
                 }
             }
             else
@@ -213,6 +214,14 @@ namespace TerminalGUIApp
 
         private void OnDeleteButtonClicked()
         {
+
+            int courseIndex = this.allCoursesListView.SelectedItem;
+
+            if (courseIndex == -1 || courseIndex >= this.allCoursesListView.Source.ToList().Count)
+            {
+                return;
+            }
+
             int index = MessageBox.Query("Delete", "Are you sure?", "NO", "YES");
 
             if (index == 0)
@@ -221,13 +230,6 @@ namespace TerminalGUIApp
             }
             else
             {
-                int courseIndex = this.allCoursesListView.SelectedItem;
-
-                if (courseIndex == -1)
-                {
-                    return;
-                }
-
                 Course selectedCourse = (Course)this.allCoursesListView.Source.ToList()[courseIndex];
 
                 bool isDeleted = this.courseRepository.DeleteById(selectedCourse.id);
@@ -253,7 +255,7 @@ namespace TerminalGUIApp
 
             int courseIndex = this.allCoursesListView.SelectedItem;
 
-            if (courseIndex == -1)
+            if (courseIndex == -1 || courseIndex >= this.allCoursesListView.Source.ToList().Count)
             {
                 return;
             }
@@ -262,10 +264,10 @@ namespace TerminalGUIApp
 
             List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(selectedCourse.id));
 
-            dialog.SetLectureList(lectures);
+            dialog.justCreated = false;
             dialog.SetCourse(selectedCourse);
             dialog.SetUser(this.currentUser);
-            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository, this.temporaryLectureRepository);
 
             Application.Run(dialog);
 
@@ -297,8 +299,10 @@ namespace TerminalGUIApp
         {
             CreateCourseDialog dialog = new CreateCourseDialog();
 
+            dialog.justCreated = true;
+
             dialog.SetUser(this.currentUser);
-            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository, this.temporaryLectureRepository);
 
             Application.Run(dialog);
 
@@ -317,7 +321,9 @@ namespace TerminalGUIApp
                         {
                             l.courseId = newCourse.id;
                             this.lectureRepository.Insert(l);
+                            this.temporaryLectureRepository.DeleteById(l.id);
                         }
+
 
                         /*   List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
                       allCoursesListView.SetSource(userCourses); */
@@ -340,7 +346,7 @@ namespace TerminalGUIApp
 
             dialog.SetCourse(course);
 
-            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository, this.temporaryLectureRepository);
 
             Application.Run(dialog);
 
@@ -368,12 +374,13 @@ namespace TerminalGUIApp
         }
 
 
-        public void SetRepositories(CourseRepository courseRepository, UserRepository userRepository, UsersAndCoursesRepository usersAndCoursesRepository, LectureRepository lectureRepository)
+        public void SetRepositories(CourseRepository courseRepository, UserRepository userRepository, UsersAndCoursesRepository usersAndCoursesRepository, LectureRepository lectureRepository, TemporaryLectureRepository temporaryLectureRepository)
         {
             this.usersAndCoursesRepository = usersAndCoursesRepository;
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
             this.lectureRepository = lectureRepository;
+            this.temporaryLectureRepository = temporaryLectureRepository;
 
             UpdateCurrentPage();
 

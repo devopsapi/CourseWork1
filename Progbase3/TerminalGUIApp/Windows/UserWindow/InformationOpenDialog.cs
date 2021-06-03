@@ -15,6 +15,7 @@ namespace TerminalGUIApp
         private UserRepository userRepository;
         private CourseRepository courseRepository;
         private UsersAndCoursesRepository usersAndCoursesRepository;
+        protected TemporaryLectureRepository temporaryLectureRepository;
 
         public InformationOpenDialog()
         {
@@ -112,7 +113,7 @@ namespace TerminalGUIApp
 
         private void OnDeleteButton()
         {
-            int index = MessageBox.Query("Delete","Are you sure?", "NO", "YES");
+            int index = MessageBox.Query("Delete", "Are you sure?", "NO", "YES");
 
             if (index == 1)
             {
@@ -153,11 +154,12 @@ namespace TerminalGUIApp
             this.userId.Text = this.user.id.ToString();
         }
 
-        public void SetRepositories(CourseRepository courseRepository, UserRepository userRepository, UsersAndCoursesRepository usersAndCoursesRepository)
+        public void SetRepositories(CourseRepository courseRepository, UserRepository userRepository, UsersAndCoursesRepository usersAndCoursesRepository, TemporaryLectureRepository temporaryLectureRepository)
         {
             this.usersAndCoursesRepository = usersAndCoursesRepository;
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
+            this.temporaryLectureRepository = temporaryLectureRepository;
         }
     }
 }

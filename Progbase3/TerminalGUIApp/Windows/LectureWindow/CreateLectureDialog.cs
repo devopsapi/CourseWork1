@@ -10,8 +10,6 @@ namespace TerminalGUIApp
         protected TextField topicInput;
         protected TextField descriptionInput;
         protected TextField duration;
-      /*   protected TextField courseIdInput;
-        protected Label courseUserIdLbl; */
 
         public CreateLectureDialog()
         {
@@ -63,20 +61,6 @@ namespace TerminalGUIApp
                 Width = Dim.Percent(25),
             };
             this.Add(durationLbl, duration);
-
-            /* 
-                        courseUserIdLbl = new Label("Course id: ")
-                        {
-                            X = Pos.Left(topicLbl),
-                            Y = Pos.Top(topicLbl) + Pos.Percent(30),
-                        };
-                        courseIdInput = new TextField("")
-                        {
-                            X = Pos.Left(topicInput),
-                            Y = Pos.Top(courseUserIdLbl),
-                            Width = Dim.Percent(25),
-                        };
-                        this.Add(courseUserIdLbl, courseIdInput); */
         }
 
         public Lecture GetLecture()

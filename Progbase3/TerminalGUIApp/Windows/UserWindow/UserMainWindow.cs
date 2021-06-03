@@ -16,6 +16,7 @@ namespace TerminalGUIApp
         private LectureRepository lectureRepository;
         private UserRepository userRepository;
         private UsersAndCoursesRepository usersAndCoursesRepository;
+        private TemporaryLectureRepository temporaryLectureRepository;
         private ListView allCoursesListView;
         private FrameView frameView;
         private int pageLength = 10;
@@ -258,7 +259,7 @@ namespace TerminalGUIApp
             InformationOpenDialog dialog = new InformationOpenDialog();
 
             dialog.SetUser(currentUser);
-            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository);
+            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository,temporaryLectureRepository);
 
             Application.Run(dialog);
         }
@@ -267,7 +268,7 @@ namespace TerminalGUIApp
         {
             TeachingOpenDialog dialog = new TeachingOpenDialog();
 
-            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository, lectureRepository);
+            dialog.SetRepositories(courseRepository, userRepository, usersAndCoursesRepository, lectureRepository,temporaryLectureRepository);
 
             Application.Run(dialog);
 
@@ -280,7 +281,7 @@ namespace TerminalGUIApp
 
             dialog.SetUser(currentUser);
 
-            dialog.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository);
+            dialog.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository,temporaryLectureRepository);
 
             Application.Run(dialog);
         }
@@ -396,7 +397,7 @@ namespace TerminalGUIApp
 
             OpenCourseDialog dialog = new OpenCourseDialog();
 
-            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository,this.temporaryLectureRepository);
             dialog.SetCourse(course);
             dialog.SetUser(this.currentUser);
             dialog.CheckIfUserSubscribed();
@@ -409,12 +410,13 @@ namespace TerminalGUIApp
             this.currentUser = user;
         }
 
-        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository)
+        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository,TemporaryLectureRepository temporaryLectureRepository)
         {
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
             this.lectureRepository = lectureRepository;
             this.usersAndCoursesRepository = usersAndCoursesRepository;
+            this.temporaryLectureRepository = temporaryLectureRepository;
 
             UpdateCurrentPage();
          //   allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));

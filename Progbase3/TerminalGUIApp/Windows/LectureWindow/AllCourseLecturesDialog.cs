@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
+using TerminalGUIApp.Windows.LectureWindow;
 
 namespace TerminalGUIApp
 {
@@ -25,11 +26,12 @@ namespace TerminalGUIApp
         private Label totalPagesLbl;
         private TextField searchInput;
         private Label nullReferenceLbl = new Label();
+        public Button addLectureBtn;
+        public Button deleteLectureBtn;
+        protected Button editLectureBtn;
         private Course course;
         public AllCourseLecturesDialog()
         {
-            lectureRepository = new LectureRepository(databasePath);
-
             this.Title = "All lectures";
 
 
@@ -103,9 +105,132 @@ namespace TerminalGUIApp
             frameView.Add(allLecturesListView);
             this.Add(frameView);
 
-            Button backBtn = new Button("Back");
+            Button backBtn = new Button(46, 30, "Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
+
+
+            addLectureBtn = new Button(20, 20, "Add lecture");
+            addLectureBtn.Clicked += OnAddLectureClicked;
+            addLectureBtn.Visible = false;
+            this.AddButton(addLectureBtn);
+
+            editLectureBtn = new Button(43, 20, "Edit");
+            editLectureBtn.Clicked += OnEditButtonClicked;
+            editLectureBtn.Visible = false;
+            this.AddButton(editLectureBtn);
+
+            deleteLectureBtn = new Button(60, 20, "Delete");
+            deleteLectureBtn.Clicked += OnDeleteButtonClicked;
+            deleteLectureBtn.Visible = false;
+            this.AddButton(deleteLectureBtn);
+        }
+
+        private void OnDeleteButtonClicked()
+        {
+
+            int lectureIndex = this.allLecturesListView.SelectedItem;
+
+            if (lectureIndex == -1 || lectureIndex >= this.allLecturesListView.Source.ToList().Count)
+            {
+                return;
+            }
+
+            int index = MessageBox.Query("Delete", "Are you sure?", "NO", "YES");
+
+            if (index == 0)
+            {
+                return;
+            }
+            else
+            {
+                Lecture selectedLecture = (Lecture)this.allLecturesListView.Source.ToList()[lectureIndex];
+
+                bool isDeleted = this.lectureRepository.DeleteById(selectedLecture.id);
+
+                if (isDeleted)
+                {
+                    /* List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
+                    allCoursesListView.SetSource(userCourses); */
+
+                    UpdateCurrentPage();
+                }
+
+                else
+                {
+                    MessageBox.ErrorQuery("Delete lecture", "Could not delete lecture", "OK");
+                }
+            }
+        }
+
+        private void OnEditButtonClicked()
+        {
+            EditLectureDialog dialog = new EditLectureDialog();
+
+            int lectureIndex = this.allLecturesListView.SelectedItem;
+
+            if (lectureIndex == -1 || lectureIndex >= this.allLecturesListView.Source.ToList().Count)
+            {
+                return;
+            }
+
+            Lecture selectedLecture = (Lecture)this.allLecturesListView.Source.ToList()[lectureIndex];
+
+            List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(selectedLecture.id));
+
+            dialog.SetLecture(selectedLecture);
+
+            Application.Run(dialog);
+
+            if (!dialog.canceled)
+            {
+                Lecture editedLecture = dialog.GetLecture();
+                editedLecture.id = selectedLecture.id;
+                editedLecture.courseId = selectedLecture.courseId;
+                if (editedLecture != null)
+                {
+                    bool isUpdated = this.lectureRepository.Update(editedLecture.id, editedLecture);
+
+                    if (isUpdated)
+                    {
+                        /*  List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
+                         allCoursesListView.SetSource(userCourses); */
+
+                        UpdateCurrentPage();
+                    }
+                    else
+                    {
+                        MessageBox.ErrorQuery("Edite lecture", "Could not edit lecture", "OK");
+                    }
+                }
+            }
+        }
+
+        public void CheckIfCanBeChanged(bool isChanged)
+        {
+            if (isChanged)
+            {
+                addLectureBtn.Visible = true;
+                editLectureBtn.Visible = true;
+                deleteLectureBtn.Visible = true;
+            }
+        }
+        private void OnAddLectureClicked()
+        {
+            CreateLectureDialog dialog = new CreateLectureDialog();
+            Application.Run(dialog);
+
+            if (!dialog.canceled)
+            {
+                Lecture newLecture = dialog.GetLecture();
+
+                if (newLecture != null)
+                {
+                    newLecture.courseId = this.course.id;
+                    this.lectureRepository.Insert(newLecture);
+                    UpdateCurrentPage();
+                }
+            }
         }
 
         public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository)
@@ -116,7 +241,7 @@ namespace TerminalGUIApp
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
             UpdateCurrentPage();
-         //  this.allLecturesListView.SetSource(this.lectureRepository.GetPage(page, pageLength, this.user.id));
+            //  this.allLecturesListView.SetSource(this.lectureRepository.GetPage(page, pageLength, this.user.id));
         }
 
         private void OnSearchChange(NStack.ustring text)

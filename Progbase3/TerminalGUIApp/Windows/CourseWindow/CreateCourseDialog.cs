@@ -8,6 +8,8 @@ namespace TerminalGUIApp
 {
     public class CreateCourseDialog : Dialog
     {
+        public bool justCreated;
+        protected TemporaryLectureRepository temporaryLectureRepository;
         protected UserRepository userRepository;
         protected UsersAndCoursesRepository usersAndCoursesRepository;
         protected CourseRepository courseRepository;
@@ -110,7 +112,7 @@ namespace TerminalGUIApp
 
         private void OnAllLecturesClicked()
         {
-            if (this.list.Count == 0)
+            if ((justCreated))
             {
                 int index = MessageBox.Query("Open lectures", "There are no lectures yet. Please create lectures first", "Back", "Create lecture");
                 if (index == 0)
@@ -127,8 +129,11 @@ namespace TerminalGUIApp
             {
                 OpenLectureAfterCreateDialog dialog = new OpenLectureAfterCreateDialog();
                 dialog.canBeEditedAndDeleted = true;
-                dialog.SetLectureList(this.list);
+                dialog.SetRepository(this.temporaryLectureRepository);
+                //  dialog.SetLectureList(this.list);
                 Application.Run(dialog);
+
+
             }
         }
 
@@ -143,15 +148,15 @@ namespace TerminalGUIApp
                 Lecture newLecture = dialog.GetLecture();
                 if (newLecture != null)
                 {
-                    this.list.Add(newLecture);
+                    this.temporaryLectureRepository.Insert(newLecture);
+                    this.justCreated = false;
                 }
             }
         }
 
         public Lecture[] GetAllLectures()
         {
-            Lecture[] allLectures = new Lecture[this.list.Count];
-            list.CopyTo(allLectures);
+            Lecture[] allLectures = this.temporaryLectureRepository.GetAll();
             return allLectures;
         }
 
@@ -197,14 +202,14 @@ namespace TerminalGUIApp
             Application.RequestStop();
         }
 
-        public void SetLectureList(List<Lecture> lectures)
-        {
-            this.list = lectures;
-        }
+        /*   public void SetLectureList(List<Lecture> lectures)
+          {
+              this.list = lectures;
+          } */
 
         private void OnCreateDialogSubmit()
         {
-            if (this.list.Count == 0)
+            if (justCreated)
             {
                 MessageBox.ErrorQuery("Create course", "Course must have at least 1 lecture.Add lectures first", "OK");
                 return;
@@ -215,8 +220,9 @@ namespace TerminalGUIApp
             Application.RequestStop();
         }
 
-        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository)
+        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository, TemporaryLectureRepository temporaryLectureRepository)
         {
+            this.temporaryLectureRepository = temporaryLectureRepository;
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
             this.lectureRepository = lectureRepository;

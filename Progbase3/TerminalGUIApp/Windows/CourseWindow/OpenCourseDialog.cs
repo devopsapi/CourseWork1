@@ -11,6 +11,7 @@ namespace TerminalGUIApp
         protected User currentUser;
         protected UserRepository userRepository;
         protected UsersAndCoursesRepository usersAndCoursesRepository;
+        protected TemporaryLectureRepository temporaryLectureRepository;
         protected CourseRepository courseRepository;
         protected LectureRepository lectureRepository;
         protected TextField titleInput;
@@ -218,7 +219,7 @@ namespace TerminalGUIApp
 
         private void OnUnSubsribedButton()
         {
-         //   MessageBox.Query("Unsubscription", "You have unsubscribed successfully", "OK");
+            //   MessageBox.Query("Unsubscription", "You have unsubscribed successfully", "OK");
 
             this.usersAndCoursesRepository.Delete(this.currentUser.id, this.course.id);
 
@@ -245,12 +246,13 @@ namespace TerminalGUIApp
             if (this.subscribed)
             {
                 AllCourseLecturesDialog dialog = new AllCourseLecturesDialog();
+                dialog.CheckIfCanBeChanged(canBeEditedAndDeleted);
                 dialog.SetUser(this.currentUser);
                 dialog.SetCourse(this.course);
                 dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository);
 
-              /*   List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-                dialog.SetLectureList(lectures); */
+                /*   List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
+                  dialog.SetLectureList(lectures); */
 
                 Application.Run(dialog);
             }
@@ -261,12 +263,13 @@ namespace TerminalGUIApp
             }
         }
 
-        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository)
+        public void SetRepositories(UserRepository userRepository, CourseRepository courseRepository, LectureRepository lectureRepository, UsersAndCoursesRepository usersAndCoursesRepository, TemporaryLectureRepository temporaryLectureRepository)
         {
             this.courseRepository = courseRepository;
             this.userRepository = userRepository;
             this.lectureRepository = lectureRepository;
             this.usersAndCoursesRepository = usersAndCoursesRepository;
+            this.temporaryLectureRepository = temporaryLectureRepository;
         }
 
         public void GetCurrentUser(User user)
