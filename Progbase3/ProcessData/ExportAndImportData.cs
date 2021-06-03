@@ -14,9 +14,7 @@ namespace ProcessData
 
         public static bool ExportCourseWithLectures(string saveDirPath, string zipName, CourseRepository courseRepository, LectureRepository lectureRepository)
         {
-            List<Course> list = courseRepository.GetAll();
-            Course[] courses = new Course[list.Count];
-            list.CopyTo(courses);
+            Course[] courses = courseRepository.GetAll();
 
             for (int i = 0; i < courses.Length; i++)
             {

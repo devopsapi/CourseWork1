@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProcessData\ProcessData.csproj" />
-    <ProjectReference Include="..\GenerateData\GenerateData.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

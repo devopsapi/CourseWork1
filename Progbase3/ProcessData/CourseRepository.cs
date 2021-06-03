@@ -141,7 +141,7 @@ namespace ProcessData
         }
 
 
-        public List<Course> GetAll()
+        public Course[] GetAll()
         {
             connection.Open();
 
@@ -149,11 +149,15 @@ namespace ProcessData
             command.CommandText = @"SELECT * FROM courses";
             SqliteDataReader reader = command.ExecuteReader();
 
-            List<Course> allCourses = ReadCourses(reader);
+            List<Course> list = ReadCourses(reader);
 
             reader.Close();
             connection.Close();
-            return allCourses;
+
+            Course[] courses = new Course[list.Count];
+            list.CopyTo(courses);
+            
+            return courses;
         }
 
 

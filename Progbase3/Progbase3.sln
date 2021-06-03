@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessXml", "ProcessXml\Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalGUIApp", "TerminalGUIApp\TerminalGUIApp.csproj", "{8D257DA7-D7B2-4CBD-B2D0-7B436203E5BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateData", "GenerateData\GenerateData.csproj", "{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,5 +98,17 @@ Global
 		{8D257DA7-D7B2-4CBD-B2D0-7B436203E5BF}.Release|x64.Build.0 = Release|Any CPU
 		{8D257DA7-D7B2-4CBD-B2D0-7B436203E5BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{8D257DA7-D7B2-4CBD-B2D0-7B436203E5BF}.Release|x86.Build.0 = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|x64.Build.0 = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Debug|x86.Build.0 = Debug|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|x64.ActiveCfg = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|x64.Build.0 = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|x86.ActiveCfg = Release|Any CPU
+		{53B8E921-C11E-45EE-9AF7-7249E53A3ADE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

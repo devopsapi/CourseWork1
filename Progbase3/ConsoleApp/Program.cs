@@ -4,6 +4,7 @@ using ProcessData;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using GenerateData;
 
 namespace ConsoleApp
 {
@@ -16,16 +17,19 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-            string databasePath = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/database.db";
-            repoC = new CourseRepository(databasePath);
-            repoL = new LectureRepository(databasePath);
-            repoU = new UserRepository(databasePath);
-            repoUC = new UsersAndCoursesRepository(databasePath);
-
-//            Console.WriteLine(repoC.CheckIfUserIsCourseAuthor(182, 73));
 
 
-  
+
+            /*  string databasePath = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/database.db";
+             repoC = new CourseRepository(databasePath);
+             repoL = new LectureRepository(databasePath);
+             repoU = new UserRepository(databasePath);
+             repoUC = new UsersAndCoursesRepository(databasePath); */
+
+            //            Console.WriteLine(repoC.CheckIfUserIsCourseAuthor(182, 73));
+
+
+
             //   Console.WriteLine(repoC.GetAllUserCourses(repoUC.GetAllUserCoursesId(181)).Length);
 
 
