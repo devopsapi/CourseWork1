@@ -21,14 +21,15 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO tempLectures (topic,description,duration)
-                VALUES ($topic,$description,$duration);
+                INSERT INTO tempLectures (topic,description,duration,createdAt)
+                VALUES ($topic,$description,$duration,$createdAt);
                 SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("$topic", lecture.topic);
             command.Parameters.AddWithValue("$description", lecture.description);
             command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$createdAt", lecture.createdAt);
 
             int insertedId = (int)(long)command.ExecuteScalar();
 
@@ -45,12 +46,13 @@ namespace ProcessData
             command.CommandText =
             @"
                 UPDATE tempLectures SET topic = $topic, description = $description,
-                duration = $duration WHERE id = $id
+                duration = $duration, createdAt = $createdAt WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", lectureId);
             command.Parameters.AddWithValue("$topic", lecture.topic);
             command.Parameters.AddWithValue("$description", lecture.description);
             command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$createdAt", lecture.createdAt);
 
             int nChanged = command.ExecuteNonQuery();
 
@@ -68,7 +70,7 @@ namespace ProcessData
 
         public Lecture[] GetAll()
         {
-             List<Lecture> list = new List<Lecture>();
+            List<Lecture> list = new List<Lecture>();
             connection.Open();
 
             SqliteCommand command = connection.CreateCommand();
@@ -110,28 +112,28 @@ namespace ProcessData
             return isDeleted;
         }
 
-        public bool DeleteAll()
-        {
-            connection.Open();
+        /*  public bool DeleteAll()
+         {
+             connection.Open();
 
-            SqliteCommand command = connection.CreateCommand();
+             SqliteCommand command = connection.CreateCommand();
 
-            command.CommandText = @"DELETE * FROM tempLectures";
+             command.CommandText = @"DELETE * FROM tempLectures";
 
-            int deletedCount = command.ExecuteNonQuery();
+             int deletedCount = command.ExecuteNonQuery();
 
-            bool isDeleted = false;
+             bool isDeleted = false;
 
-            if (deletedCount != 0)
-            {
-                isDeleted = true;
-            }
+             if (deletedCount != 0)
+             {
+                 isDeleted = true;
+             }
 
-            connection.Close();
+             connection.Close();
 
-            return isDeleted;
+             return isDeleted;
 
-        }
+         } */
 
         public int GetSearchPagesCount(int pageSize, string searchValue)
         {
@@ -214,6 +216,7 @@ namespace ProcessData
             lecture.topic = reader.GetString(1);
             lecture.description = reader.GetString(2);
             lecture.duration = reader.GetString(3);
+            lecture.createdAt = reader.GetDateTime(4);
 
             return lecture;
         }

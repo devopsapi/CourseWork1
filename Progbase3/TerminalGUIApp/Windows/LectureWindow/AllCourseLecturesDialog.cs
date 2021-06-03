@@ -9,7 +9,6 @@ namespace TerminalGUIApp
     {
         public bool canBeEditedAndDeleted;
         private User user;
-        private static string databasePath = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/database.db";
         private UserRepository userRepository;
         private CourseRepository courseRepository;
         private LectureRepository lectureRepository;

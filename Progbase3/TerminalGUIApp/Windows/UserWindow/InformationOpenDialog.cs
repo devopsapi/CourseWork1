@@ -7,6 +7,7 @@ namespace TerminalGUIApp
     {
 
         private User user;
+        public bool deleted;
         private TextField userId;
         private TextField createdAt;
         private TextField fullnameInput;
@@ -19,7 +20,6 @@ namespace TerminalGUIApp
 
         public InformationOpenDialog()
         {
-            //  user = new User();
             this.Title = "User information";
 
             Label usernameLbl = new Label("Username: ")
@@ -117,7 +117,7 @@ namespace TerminalGUIApp
 
             if (index == 1)
             {
-                userRepository.DeleteByUsername(this.user.username);
+                this.deleted = true;
                 Application.RequestStop();
             }
         }
@@ -137,6 +137,8 @@ namespace TerminalGUIApp
 
                 this.usernameInput.Text = this.user.username;
                 this.fullnameInput.Text = this.user.fullname;
+
+                this.userRepository.Update(this.user.id, user);
             }
         }
         private void OnCreateDialogSubmit()

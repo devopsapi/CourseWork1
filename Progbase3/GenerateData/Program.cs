@@ -364,7 +364,9 @@ namespace GenerateData
 
             int[] ids = courseRepository.GetAllCoursesIds();
 
-            Lecture[] lectures = ReadLecturesFromFile(lecturesFile, ids);
+            DateTime[] datesInterval = ParseDateIntervals(command[3]);
+
+            Lecture[] lectures = ReadLecturesFromFile(datesInterval, lecturesFile, ids);
 
             for (int i = 0; i < dataAmount; i++)
             {
@@ -373,7 +375,7 @@ namespace GenerateData
 
         }
 
-        private static Lecture[] ReadLecturesFromFile(string filename, int[] ids)
+        private static Lecture[] ReadLecturesFromFile(DateTime[] datesInterval, string filename, int[] ids)
         {
             List<Lecture> list = new List<Lecture>();
 
@@ -395,6 +397,7 @@ namespace GenerateData
                     lecture.description = values[1];
                     lecture.duration = TimeSpan.FromSeconds(double.Parse(values[2])).ToString();
                     lecture.courseId = ids[random.Next(0, ids.Length)];
+                    lecture.createdAt = GenerateRandomDate(datesInterval);
 
                     list.Add(lecture);
                 }

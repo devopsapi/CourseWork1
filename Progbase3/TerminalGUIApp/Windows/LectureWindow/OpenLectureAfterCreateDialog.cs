@@ -46,7 +46,7 @@ namespace TerminalGUIApp.Windows.LectureWindow
             frameView.Add(allLecturesListView);
             this.Add(frameView);
 
-            Button backBtn = new Button(46, 30,"Back");
+            Button backBtn = new Button(46, 30, "Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
 
@@ -205,8 +205,9 @@ namespace TerminalGUIApp.Windows.LectureWindow
                 if (newLecture != null)
                 {
                     newLecture.id = this.temporaryLectureRepository.Insert(newLecture);
-                    UpdateCurrentPage();
                 }
+
+                UpdateCurrentPage();
             }
         }
         private void OnCreateDialogSubmit()
@@ -214,11 +215,11 @@ namespace TerminalGUIApp.Windows.LectureWindow
             Application.RequestStop();
         }
 
-      /*   public void SetLectureList(List<Lecture> lectures)
-        {
-            this.lectures = lectures;
-            this.allLecturesListView.SetSource(lectures);
-        } */
+        /*   public void SetLectureList(List<Lecture> lectures)
+          {
+              this.lectures = lectures;
+              this.allLecturesListView.SetSource(lectures);
+          } */
 
         private void OnOpenLecture(ListViewItemEventArgs args)
         {
@@ -241,12 +242,12 @@ namespace TerminalGUIApp.Windows.LectureWindow
                 {
                     this.temporaryLectureRepository.Update(editedLecture.id, editedLecture);
 
-                    UpdateCurrentPage();
-
                     /*     this.lectures[this.lectures.FindIndex(ind => ind.topic.Equals(lecture.topic))] = editedLecture;
 
                 this.allLecturesListView.SetSource(lectures); */
                 }
+
+                UpdateCurrentPage();
             }
 
             else if (dialog.deleted)
@@ -254,6 +255,7 @@ namespace TerminalGUIApp.Windows.LectureWindow
                 this.temporaryLectureRepository.DeleteById(lecture.id);
 
                 UpdateCurrentPage();
+
                 /*  this.lectures.Remove(lecture);
 
                  this.allLecturesListView.SetSource(lectures); */

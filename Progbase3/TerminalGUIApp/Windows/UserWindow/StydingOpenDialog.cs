@@ -209,11 +209,6 @@ namespace TerminalGUIApp.Windows.UserWindow
             this.usersAndCoursesRepository.Delete(this.currentUser.id, selectedCourse.id);
 
             UpdateCurrentPage();
-
-            /*  List<Course> courses = new List<Course>(this.courseRepository.GetAllUserCourses(this.usersAndCoursesRepository.GetAllUserCoursesId(this.currentUser.id)));
-
-             // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-             allCoursesListView.SetSource(courses); */
         }
 
         public void SetUser(User user)
@@ -230,11 +225,6 @@ namespace TerminalGUIApp.Windows.UserWindow
             this.temporaryLectureRepository = temporaryLectureRepository;
 
             UpdateCurrentPage();
-
-            /* List<Course> courses = new List<Course>(this.courseRepository.GetAllUserCourses(this.usersAndCoursesRepository.GetAllUserCoursesId(this.currentUser.id)));
-
-            // allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-            allCoursesListView.SetSource(courses); */
         }
 
         private void OnOpenCourse(ListViewItemEventArgs args)
@@ -243,7 +233,7 @@ namespace TerminalGUIApp.Windows.UserWindow
 
             OpenCourseDialog dialog = new OpenCourseDialog();
 
-            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository,this.temporaryLectureRepository);
+            dialog.SetRepositories(this.userRepository, this.courseRepository, this.lectureRepository, this.usersAndCoursesRepository, this.temporaryLectureRepository);
 
             dialog.SetUser(this.currentUser);
 
@@ -252,6 +242,8 @@ namespace TerminalGUIApp.Windows.UserWindow
             dialog.CheckIfUserSubscribed();
 
             Application.Run(dialog);
+
+            UpdateCurrentPage();
         }
 
 

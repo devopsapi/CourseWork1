@@ -15,13 +15,13 @@ namespace TerminalGUIApp
         protected TextField descriptionInput;
         protected TextField durationInput;
         protected Button editBtn;
-
         protected Button deleteBtn;
+        protected TextField createdAt;
         public OpenLectureDialog()
         {
             this.Title = "Open lecture";
 
-            Button backBtn = new Button(46, 30,"Back");
+            Button backBtn = new Button(46, 30, "Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
 
@@ -79,6 +79,20 @@ namespace TerminalGUIApp
             };
             this.Add(durationLbl, durationInput);
 
+            Label createdAtLbl = new Label("Created at:")
+            {
+                X = Pos.Left(topicLbl),
+                Y = Pos.Top(topicLbl) + Pos.Percent(30),
+            };
+            createdAt = new TextField("")
+            {
+                X = Pos.Left(topicInput),
+                Y = Pos.Top(createdAtLbl),
+                Width = Dim.Percent(25),
+                ReadOnly = true,
+            };
+            this.Add(createdAtLbl, createdAt);
+
         }
 
         public void CheckIfLectureCanBeEditedAndDeleted(bool isEditedAndDeleted)
@@ -121,6 +135,7 @@ namespace TerminalGUIApp
             this.topicInput.Text = lecture.topic;
             this.descriptionInput.Text = lecture.description;
             this.durationInput.Text = lecture.duration.ToString();
+            this.createdAt.Text = lecture.createdAt.ToString();
 
             this.lecture = lecture;
         }

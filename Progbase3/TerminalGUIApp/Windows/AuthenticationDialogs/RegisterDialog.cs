@@ -111,11 +111,12 @@ namespace TerminalGUIApp.Windows.AuthenticationDialogs
 
                 if (authentication.Register(registerUser))
                 {
-                    MessageBox.Query("Register user", "User successfully created", "Ok");
+                    MessageBox.Query("Register user", "User successfully created", "OK");
+                    Application.RequestStop();
                 }
                 else
                 {
-                    MessageBox.Query("Register user", "User can't be created. Please choose another username", "Ok");
+                    MessageBox.Query("Register user", "Username is already taken. Please choose another one", "OK");
                 }
             }
         }

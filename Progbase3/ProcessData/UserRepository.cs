@@ -273,8 +273,7 @@ namespace ProcessData
             command.CommandText = @"UPDATE users
                                     SET username = $username,
                                         password = $password,
-                                        fullname = $fullname,
-                                    WHERE id = $userId";
+                                        fullname = $fullname WHERE id = $userId";
             command.Parameters.AddWithValue("$userId", userId);
             command.Parameters.AddWithValue("$username", user.username);
             command.Parameters.AddWithValue("$password", user.password);
@@ -340,7 +339,6 @@ namespace ProcessData
             string fullname = reader.GetString(3);
             DateTime createdAt = reader.GetDateTime(4);
             int imported = reader.GetInt32(5);
-            string isAuthor = reader.GetString(6);
 
             User user = new User(id, username, password, fullname, createdAt);
             user.imported = (imported == 1) ? true : false;

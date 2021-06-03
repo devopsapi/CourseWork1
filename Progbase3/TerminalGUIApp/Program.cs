@@ -33,12 +33,15 @@ namespace TerminalGUIApp
             Application.Init();
             Toplevel top = Application.Top;
 
-            UserMainWindow win = new UserMainWindow();
-            win.SetUser(user);
+            MainWindow window = new MainWindow();
+            window.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository, temporaryLectureRepository);
 
-            win.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository, temporaryLectureRepository);
+            /* UserMainWindow window = new UserMainWindow();
+            window.SetUser(user);
 
-            top.Add(win);
+            window.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository, temporaryLectureRepository);
+ */
+            top.Add(window);
 
             Application.Run();
 

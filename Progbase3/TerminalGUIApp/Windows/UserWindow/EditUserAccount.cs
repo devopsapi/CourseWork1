@@ -19,7 +19,6 @@ namespace TerminalGUIApp
 
         public EditUserAccountDialog()
         {
-            //  user = new User();
             this.Title = "User information";
 
             Label usernameLbl = new Label("Username: ")
@@ -86,6 +85,9 @@ namespace TerminalGUIApp
 
         public void SetUser(User user)
         {
+            this.usernameInput.Text = user.username;
+            this.fullnameInput.Text = user.fullname;
+            
             this.user = user;
         }
 

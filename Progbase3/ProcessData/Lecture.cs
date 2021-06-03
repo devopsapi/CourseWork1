@@ -10,6 +10,7 @@ namespace ProcessData
         public string description;
         public string duration;
         public int courseId;
+        public DateTime createdAt;
 
         public override string ToString()
         {

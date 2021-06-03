@@ -23,14 +23,15 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO lectures (topic,description,duration,course_id)
-                VALUES ($topic,$description,$duration,$course_id);
+                INSERT INTO lectures (topic,description,duration,createdAt,course_id)
+                VALUES ($topic,$description,$duration,$createdAt,$course_id);
                 SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("$topic", lecture.topic);
             command.Parameters.AddWithValue("$description", lecture.description);
             command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$createdAt", lecture.createdAt);
             command.Parameters.AddWithValue("$course_id", lecture.courseId);
 
 
@@ -105,7 +106,7 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO lectures (id,topic,description,duration,course_id,) VALUES ($id, $topic,$description,$duration,$course_id);
+                INSERT INTO lectures (id,topic,description,duration,createdAt,course_id,) VALUES ($id, $topic,$description,$duration,$createdAt,$course_id);
                 SELECT last_insert_rowid();
             ";
 
@@ -113,6 +114,7 @@ namespace ProcessData
             command.Parameters.AddWithValue("$topic", lecture.topic);
             command.Parameters.AddWithValue("$description", lecture.description);
             command.Parameters.AddWithValue("$duration", lecture.duration);
+            command.Parameters.AddWithValue("$createdAt", lecture.createdAt);
             command.Parameters.AddWithValue("$course_id", lecture.courseId);
 
             int insertedId = (int)(long)command.ExecuteScalar();
@@ -121,6 +123,7 @@ namespace ProcessData
 
             return insertedId;
         }
+
 
         public bool LectureExists(int lectureId)
         {
@@ -191,6 +194,7 @@ namespace ProcessData
             return totalPages;
         }
 
+
         public List<Lecture> GetPage(int pageNum, int pageSize, int courseId)
         {
             if (pageNum < 1)
@@ -223,6 +227,7 @@ namespace ProcessData
             return page;
         }
 
+
         public int GetSearchPagesCount(int pageSize, string searchValue, int courseId)
         {
             if (pageSize < 1)
@@ -246,6 +251,7 @@ namespace ProcessData
 
             return totalSearchPages;
         }
+
 
         public List<Lecture> GetSearchPage(string searchValue, int pageNum, int pageSize, int courseId)
         {
@@ -306,7 +312,8 @@ namespace ProcessData
             lecture.topic = reader.GetString(1);
             lecture.description = reader.GetString(2);
             lecture.duration = reader.GetString(3);
-            lecture.courseId = reader.GetInt32(4);
+            lecture.createdAt = reader.GetDateTime(4);
+            lecture.courseId = reader.GetInt32(5);
 
             return lecture;
         }
@@ -337,7 +344,7 @@ namespace ProcessData
         }
 
 
-        public int[] GetAllLecturesIds()
+      /*   public int[] GetAllLecturesIds()
         {
             connection.Open();
 
@@ -369,6 +376,6 @@ namespace ProcessData
             }
 
             return list;
-        }
+        } */
     }
 }

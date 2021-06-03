@@ -156,8 +156,7 @@ namespace TerminalGUIApp
 
         public Lecture[] GetAllLectures()
         {
-            Lecture[] allLectures = this.temporaryLectureRepository.GetAll();
-            return allLectures;
+            return this.temporaryLectureRepository.GetAll();
         }
 
         public Course GetCourse()

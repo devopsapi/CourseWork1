@@ -31,8 +31,8 @@ namespace TerminalGUIApp
 
         public TeachingOpenDialog()
         {
-            currentUser = new User();
-            currentUser.id = 182;
+            /* currentUser = new User();
+            currentUser.id = 182; */
             this.Title = "Teaching";
 
             Button backBtn = new Button(46, 30, "Back")
@@ -334,6 +334,10 @@ namespace TerminalGUIApp
             }
         }
 
+        public void SetUser(User user)
+        {
+            this.currentUser = user;
+        }
 
 
         private void OpenUserCourseDialog(ListViewItemEventArgs args)
@@ -383,9 +387,6 @@ namespace TerminalGUIApp
             this.temporaryLectureRepository = temporaryLectureRepository;
 
             UpdateCurrentPage();
-
-            /*  List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-             allCoursesListView.SetSource(userCourses); */
         }
 
         private void OnCreateDialogSubmit()

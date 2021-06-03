@@ -83,6 +83,7 @@ namespace TerminalGUIApp
                 lecture.topic = topicInput.Text.ToString();
                 lecture.description = descriptionInput.Text.ToString();
                 lecture.duration = duration.Text.ToString();
+                lecture.createdAt = DateTime.Now;
             }
 
             return lecture;

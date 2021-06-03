@@ -224,6 +224,7 @@ namespace TerminalGUIApp
             this.usersAndCoursesRepository.Delete(this.currentUser.id, this.course.id);
 
             CheckIfUserSubscribed();
+
         }
 
         private void OnAllLecturesClicked()
