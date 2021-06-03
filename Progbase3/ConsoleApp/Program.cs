@@ -221,7 +221,7 @@ namespace ConsoleApp
         {
             List<User> generatedUsers = new List<User>();
             StreamReader reader = new StreamReader(fullnamesFile);
-            bool[] trueOrFalse = new bool[] { true, false };
+           
             string[] usernames = ReadAllUsersFromTxt("C:/Users/Yuli/Desktop/CourseWork/progbase3/data/users.txt", dataAmount);
             int count = 0;
             string line = "";
@@ -238,8 +238,8 @@ namespace ConsoleApp
                 user.password = GeneratePassword(32);
                 user.fullname = line;
                 user.createdAt = RandomDay();
-                user.imported = trueOrFalse[random.Next(0, trueOrFalse.Length)];
-                user.isAuthor = trueOrFalse[random.Next(0, trueOrFalse.Length)];
+                user.imported = false;
+              
 
                 generatedUsers.Add(user);
                 count++;

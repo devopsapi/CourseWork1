@@ -19,8 +19,6 @@ namespace ProcessData
 
         public bool imported = false;
 
-        public bool isAuthor;
-
         public Users_Courses[] allUserCourses;
 
         public Dictionary<Course, DateTime> daysOfSubscription = new Dictionary<Course, DateTime>();

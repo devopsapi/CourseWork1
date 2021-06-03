@@ -171,8 +171,8 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO users (username, password, fullname, createdAt,isAuthor) 
-                VALUES ($username, $password, $fullname, $createdAt, $isAuthor);
+                INSERT INTO users (username, password, fullname, createdAt) 
+                VALUES ($username, $password, $fullname, $createdAt);
 
                 SELECT last_insert_rowid();
             ";
@@ -181,7 +181,6 @@ namespace ProcessData
             command.Parameters.AddWithValue("$password", user.password);
             command.Parameters.AddWithValue("$fullname", user.fullname);
             command.Parameters.AddWithValue("$createdAt", user.createdAt.ToString("o"));
-            command.Parameters.AddWithValue("$isAuthor", user.isAuthor);
 
             int insertedId = (int)(long)command.ExecuteScalar();
 
@@ -198,8 +197,8 @@ namespace ProcessData
 
             command.CommandText =
             @"
-                INSERT INTO users (id, username, password, fullname, createdAt, imported, isAuthor) 
-                VALUES ($id, $username, $password, $fullname, $createdAt, $imported, $isAuthor);
+                INSERT INTO users (id, username, password, fullname, createdAt, imported) 
+                VALUES ($id, $username, $password, $fullname, $createdAt, $imported, );
 
                 SELECT last_insert_rowid();
             ";
@@ -210,7 +209,6 @@ namespace ProcessData
             command.Parameters.AddWithValue("$fullname", user.fullname);
             command.Parameters.AddWithValue("$createdAt", user.createdAt.ToString("o"));
             command.Parameters.AddWithValue("$imported", user.imported ? 1 : 0);
-            command.Parameters.AddWithValue("$isAuthor", user.isAuthor);
 
             int insertedId = (int)(long)command.ExecuteScalar();
 
@@ -276,13 +274,11 @@ namespace ProcessData
                                     SET username = $username,
                                         password = $password,
                                         fullname = $fullname,
-                                        isAuthor = $isAuthor
                                     WHERE id = $userId";
             command.Parameters.AddWithValue("$userId", userId);
             command.Parameters.AddWithValue("$username", user.username);
             command.Parameters.AddWithValue("$password", user.password);
             command.Parameters.AddWithValue("$fullname", user.fullname);
-            command.Parameters.AddWithValue("$isAuthor", user.isAuthor);
 
             int nChanged = command.ExecuteNonQuery();
 
@@ -348,7 +344,6 @@ namespace ProcessData
 
             User user = new User(id, username, password, fullname, createdAt);
             user.imported = (imported == 1) ? true : false;
-            user.isAuthor = (reader.GetString(6) == "1") ? true : false;
 
             return user;
         }

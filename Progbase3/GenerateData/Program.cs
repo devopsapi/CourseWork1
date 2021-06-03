@@ -175,8 +175,6 @@ namespace GenerateData
 
             string[] usernames = ReadUsernamesFromFile(usernamesFile);
 
-            bool[] trueOrFalse = new bool[] { true, false };
-
             DateTime[] datesInterval = ParseDateIntervals(command[3]);
 
             for (int i = 0; i < dataAmount; i++)
@@ -187,8 +185,7 @@ namespace GenerateData
                 newUser.password = GeneratePassword(32);
                 newUser.fullname = fullnames[random.Next(0, fullnamesFile.Length)];
                 newUser.createdAt = GenerateRandomDate(datesInterval);
-                newUser.imported = trueOrFalse[random.Next(0, trueOrFalse.Length)];
-                newUser.isAuthor = trueOrFalse[random.Next(0, trueOrFalse.Length)];
+                newUser.imported = false;
 
                 if (!authentication.Register(newUser))
                 {

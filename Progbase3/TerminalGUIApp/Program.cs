@@ -27,7 +27,6 @@ namespace TerminalGUIApp
             user.fullname = "Max Litva";
             user.password = "1231231";
             user.createdAt = DateTime.Now;
-            user.isAuthor = true;
             user.imported = false;
 
 
