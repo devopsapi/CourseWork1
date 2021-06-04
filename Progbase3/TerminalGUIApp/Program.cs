@@ -12,7 +12,7 @@ namespace TerminalGUIApp
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
 
-            string databasePath = "C:/Users/Yuli/Desktop/CourseWork/progbase3/data/database.db";
+            string databasePath = "../data/database.db";
 
             CourseRepository courseRepository = new CourseRepository(databasePath);
             LectureRepository lectureRepository = new LectureRepository(databasePath);
