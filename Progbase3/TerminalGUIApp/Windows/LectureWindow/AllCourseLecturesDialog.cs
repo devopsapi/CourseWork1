@@ -33,7 +33,6 @@ namespace TerminalGUIApp
         {
             this.Title = "All lectures";
 
-
             prevPageBtn = new Button("Previous page")
             {
                 X = Pos.Percent(35),
@@ -149,9 +148,6 @@ namespace TerminalGUIApp
 
                 if (isDeleted)
                 {
-                    /* List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-                    allCoursesListView.SetSource(userCourses); */
-
                     UpdateCurrentPage();
                 }
 
@@ -192,9 +188,6 @@ namespace TerminalGUIApp
 
                     if (isUpdated)
                     {
-                        /*  List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-                         allCoursesListView.SetSource(userCourses); */
-
                         UpdateCurrentPage();
                     }
                     else
@@ -240,7 +233,6 @@ namespace TerminalGUIApp
             this.usersAndCoursesRepository = usersAndCoursesRepository;
 
             UpdateCurrentPage();
-            //  this.allLecturesListView.SetSource(this.lectureRepository.GetPage(page, pageLength, this.user.id));
         }
 
         private void OnSearchChange(NStack.ustring text)
@@ -324,11 +316,6 @@ namespace TerminalGUIApp
             this.user = user;
         }
 
-        public void SetLectureList(List<Lecture> lecturesList)
-        {
-            this.allLecturesListView.SetSource(lecturesList);
-        }
-
         public void SetCourse(Course course)
         {
             this.course = course;
@@ -361,10 +348,6 @@ namespace TerminalGUIApp
                 this.lectureRepository.Update(editedLecture.id, editedLecture);
 
                 UpdateCurrentPage();
-                /* 
-                                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-
-                                this.allLecturesListView.SetSource(lectures); */
             }
 
             else if (dialog.deleted)
@@ -372,10 +355,6 @@ namespace TerminalGUIApp
                 this.lectureRepository.DeleteById(lecture.id);
 
                 UpdateCurrentPage();
-                /* 
-                                List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-
-                                this.allLecturesListView.SetSource(lectures); */
             }
 
         }

@@ -37,8 +37,6 @@ namespace TerminalGUIApp.Windows.CourseWindow
 
             dialog.SetCourse(this.course);
             dialog.justCreated = false;
-            //  List<Lecture> lectures = new List<Lecture>(this.lectureRepository.GetAllCourseLectures(this.course.id));
-            //  dialog.SetLectureList(lectures);
 
             Application.Run(dialog);
 

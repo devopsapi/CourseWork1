@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ProcessData
 {
@@ -14,10 +13,7 @@ namespace ProcessData
         public bool isPrivate;
         public double price;
         public DateTime publishedAt;
-        public Lecture[] lectures;
-        public Users_Courses[] usersAndCourses;
         public int userId;
-        public User user;
 
         public override string ToString()
         {

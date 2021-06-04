@@ -11,7 +11,6 @@ namespace TerminalGUIApp
         public bool deleted;
         protected Lecture lecture;
         protected TextField topicInput;
-        //      protected TextField lectureIdInput;
         protected TextField descriptionInput;
         protected TextField durationInput;
         protected Button editBtn;
@@ -24,7 +23,6 @@ namespace TerminalGUIApp
             Button backBtn = new Button(46, 30, "Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
-
 
             editBtn = new Button(60, 1, "Edit");
             editBtn.Clicked += OnEditButtonClicked;
@@ -92,7 +90,6 @@ namespace TerminalGUIApp
                 ReadOnly = true,
             };
             this.Add(createdAtLbl, createdAt);
-
         }
 
         public void CheckIfLectureCanBeEditedAndDeleted(bool isEditedAndDeleted)

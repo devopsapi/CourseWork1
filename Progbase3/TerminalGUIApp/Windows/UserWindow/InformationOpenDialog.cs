@@ -12,7 +12,6 @@ namespace TerminalGUIApp
         private TextField createdAt;
         private TextField fullnameInput;
         private TextField usernameInput;
-        private TextField subscribed;
         private UserRepository userRepository;
         private CourseRepository courseRepository;
         private UsersAndCoursesRepository usersAndCoursesRepository;
@@ -81,21 +80,6 @@ namespace TerminalGUIApp
             };
             this.Add(userIdLbl, userId);
 
-            // NO DATA EXSIST PROBLEM, BETTER DELETE THIS
-            /*   Label subscibedOnLbl = new Label("Subscribed on courses:")
-              {
-                  X = Pos.Left(usernameLbl),
-                  Y = Pos.Top(usernameLbl) + Pos.Percent(40),
-              };
-              subscribed = new TextField("")
-              {
-                  X = Pos.Left(usernameInput),
-                  Y = Pos.Top(subscibedOnLbl),
-                  Width = Dim.Percent(25),
-                  ReadOnly = true,
-              };
-              this.Add(subscibedOnLbl, subscribed); */
-
             Button backBtn = new Button("Back");
             backBtn.Clicked += OnCreateDialogSubmit;
             this.AddButton(backBtn);
@@ -107,8 +91,6 @@ namespace TerminalGUIApp
             Button deleteBtn = new Button(80, 3, "Delete");
             deleteBtn.Clicked += OnDeleteButton;
             this.AddButton(deleteBtn);
-
-
         }
 
         private void OnDeleteButton()
@@ -139,6 +121,21 @@ namespace TerminalGUIApp
                 this.fullnameInput.Text = this.user.fullname;
 
                 this.userRepository.Update(this.user.id, user);
+            }
+
+            if (dialog.accepted)
+            {
+                User changedUser = dialog.GetEditedUser();
+
+                if (changedUser == null)
+                {
+                    return;
+                }
+
+                changedUser.createdAt = user.createdAt;
+                changedUser.id = user.id;
+
+                bool isUpdated = userRepository.Update(user.id, changedUser);
             }
         }
         private void OnCreateDialogSubmit()

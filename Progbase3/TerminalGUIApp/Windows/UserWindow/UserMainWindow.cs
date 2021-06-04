@@ -35,18 +35,7 @@ namespace TerminalGUIApp
             mainMenu = new MenuBar(
                new MenuBarItem[]
                {
-                    new MenuBarItem ("_File", new MenuItem[]
-                    {
-                        new MenuItem("_Export...", "", OnExportOpen)
-                        {
-                            CanExecute = CanBeExecuted,
-                        },
-                        new MenuItem("_Import...", "", OnImportOpen)
-                        {
-                            CanExecute = CanBeExecuted,
-                        },
-                        new MenuItem("_Quit", "", OnQuit),
-                    })
+                    new MenuBarItem ("_File", new MenuItem[]{new MenuItem("_Quit", "", OnQuit),})
                })
             {
                 Width = Dim.Percent(5),
@@ -74,6 +63,7 @@ namespace TerminalGUIApp
                     new MenuBarItem ("Information", "",OnInformationOpen),
                     new MenuBarItem("Teaching", "", OnTeachingOpen),
                     new MenuBarItem("Styding", "", OnStydingOpen),
+                    new MenuBarItem("Sign out","",OnSignOut),
                 }
                 )})
             {
@@ -82,13 +72,7 @@ namespace TerminalGUIApp
                 Width = Dim.Percent(5)
             };
 
-
             this.Add(userAccountMenu);
-
-
-
-
-            //////////////////////////////////////
 
 
             this.Title = "Online styding";
@@ -133,7 +117,6 @@ namespace TerminalGUIApp
             this.Add(prevPageBtn, pageLbl, separateLbl, totalPagesLbl, nextPageBtn);
 
 
-
             frameView = new FrameView("Courses")
             {
                 X = Pos.Percent(15),
@@ -154,8 +137,6 @@ namespace TerminalGUIApp
             this.Add(subscribe);
 
 
-            ///////////////////
-
             Label searchLbl = new Label("Seeking categories - ")
             {
                 X = Pos.Percent(33),
@@ -174,6 +155,11 @@ namespace TerminalGUIApp
             };
             searchInput.TextChanged += OnSearchChange;
             this.Add(searchLbl, chooseSearchColumn, searchInput);
+        }
+
+        private void OnSignOut()
+        {
+            Application.RequestStop();
         }
 
         private void OnSearchChange(NStack.ustring text)
@@ -313,57 +299,12 @@ namespace TerminalGUIApp
                 menus[i].CloseMenu();
             }
         }
-        private bool CanBeExecuted()
-        {
-            if (currentUser == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-        private void OnImportOpen()
-        {
-            /* Toplevel top = Application.Top;
-
-            ImportWindow win = new ImportWindow();
-            win.SetRepositories(usersRepository, postsRepository, commentsRepository);
-
-            RunWindow(win); */
-        }
-        private void OnExportOpen()
-        {
-            /*  Toplevel top = Application.Top;
-
-             ExportWindow win = new ExportWindow();
-             win.SetRepositories(postsRepository);
-
-             RunWindow(win); */
-        }
-
-
-        private void OnCreateButtonClicked()
-        {
-            CreateCourseDialog dialog = new CreateCourseDialog();
-            Application.Run(dialog);
-
-            if (!dialog.canceled)
-            {
-                Course newCourse = dialog.GetCourse();
-                if (newCourse != null)
-                {
-                    newCourse.id = courseRepository.Insert(newCourse);
-
-                    allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
-                }
-            }
-        }
 
         private void OnSubscribeClicked()
         {
             int courseIndex = this.allCoursesListView.SelectedItem;
 
-            if (courseIndex == -1)
+            if (courseIndex == -1 || courseIndex >= this.allCoursesListView.Source.ToList().Count)
             {
                 return;
             }
@@ -429,7 +370,6 @@ namespace TerminalGUIApp
             this.temporaryLectureRepository = temporaryLectureRepository;
 
             UpdateCurrentPage();
-            //   allCoursesListView.SetSource(this.courseRepository.GetPage(page, pageLength));
         }
     }
 }

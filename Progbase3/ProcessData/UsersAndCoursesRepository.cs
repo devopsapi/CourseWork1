@@ -40,58 +40,6 @@ namespace ProcessData
         }
 
 
-        public int InsertImport(UsersAndCourses usersAndCourses)
-        {
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-
-            command.CommandText =
-            @"
-                INSERT INTO users_courses (user_id,course_id) 
-                VALUES ($user_id, $course_id);
-
-                SELECT last_insert_rowid();
-            ";
-
-            command.Parameters.AddWithValue("$id", usersAndCourses.id);
-            command.Parameters.AddWithValue("$user_id", usersAndCourses.userId);
-            command.Parameters.AddWithValue("$course_id", usersAndCourses.courseId);
-
-            int insertedId = (int)(long)command.ExecuteScalar();
-
-            connection.Close();
-
-            return insertedId;
-        }
-
-
-        public bool Update(int userAndCourseId, UsersAndCourses usersAndCourses)
-        {
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"UPDATE users_courses
-                                    SET user_id = $userId,course_id = $course_id,
-                                    WHERE id = $userId";
-            command.Parameters.AddWithValue("$userId", userAndCourseId);
-            command.Parameters.AddWithValue("$user_id", usersAndCourses.userId);
-            command.Parameters.AddWithValue("$course_id", usersAndCourses.courseId);
-
-            int nChanged = command.ExecuteNonQuery();
-
-            bool isUpdated = false;
-
-            if (nChanged != 0)
-            {
-                isUpdated = true;
-            }
-
-            connection.Close();
-
-            return isUpdated;
-        }
-
         public bool Delete(int userId, int courseId)
         {
             connection.Open();
@@ -160,7 +108,6 @@ namespace ProcessData
 
         private List<int> ReadAllUserCourses(SqliteDataReader reader)
         {
-
             List<int> list = new List<int>();
 
             while (reader.Read())
@@ -168,7 +115,6 @@ namespace ProcessData
                 int temp = reader.GetInt32(2);
                 list.Add(temp);
             }
-
             return list;
         }
     }

@@ -31,8 +31,6 @@ namespace TerminalGUIApp
 
         public TeachingOpenDialog()
         {
-            /* currentUser = new User();
-            currentUser.id = 182; */
             this.Title = "Teaching";
 
             Button backBtn = new Button(46, 30, "Back")
@@ -71,7 +69,6 @@ namespace TerminalGUIApp
             deleteCourseBtn.Clicked += OnDeleteButtonClicked;
             this.AddButton(deleteCourseBtn);
 
-
             prevPageBtn = new Button("Previous page")
             {
                 X = Pos.Percent(35),
@@ -103,7 +100,6 @@ namespace TerminalGUIApp
             nextPageBtn.Clicked += OnNextPage;
             prevPageBtn.Clicked += OnPrevPage;
             this.Add(prevPageBtn, pageLbl, separateLbl, totalPagesLbl, nextPageBtn);
-
 
             Label searchLbl = new Label("Seeking categories - ")
             {
@@ -188,25 +184,17 @@ namespace TerminalGUIApp
                     frameView.RemoveAll();
                     frameView.Add(nullReferenceLbl);
 
-                    /* addCourseBtn.Visible = false;
-                    editCourseBtn.Visible = false;
-                    deleteCourseBtn.Visible = false; */
                 }
                 else
                 {
                     frameView.RemoveAll();
                     frameView.Add(allCoursesListView);
-                    /* 
-                                        addCourseBtn.Visible = true;
-                                        editCourseBtn.Visible = true;
-                                        deleteCourseBtn.Visible = true; */
                 }
             }
             else
             {
                 selecting = false;
             }
-
 
             prevPageBtn.Visible = (page != 1);
             nextPageBtn.Visible = (page! < totalPages);
@@ -236,9 +224,6 @@ namespace TerminalGUIApp
 
                 if (isDeleted)
                 {
-                    /* List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-                    allCoursesListView.SetSource(userCourses); */
-
                     UpdateCurrentPage();
                 }
 
@@ -281,9 +266,6 @@ namespace TerminalGUIApp
 
                     if (isUpdated)
                     {
-                        /*  List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-                         allCoursesListView.SetSource(userCourses); */
-
                         UpdateCurrentPage();
                     }
                     else
@@ -323,11 +305,6 @@ namespace TerminalGUIApp
                             this.lectureRepository.Insert(l);
                             this.temporaryLectureRepository.DeleteById(l.id);
                         }
-
-
-                        /*   List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-                      allCoursesListView.SetSource(userCourses); */
-
                         UpdateCurrentPage();
                     }
                 }
@@ -358,10 +335,6 @@ namespace TerminalGUIApp
             {
                 Course editedCourse = dialog.GetCourse();
 
-                /*  List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-
-                 allCoursesListView.SetSource(userCourses); */
-
                 UpdateCurrentPage();
             }
 
@@ -370,10 +343,6 @@ namespace TerminalGUIApp
                 this.courseRepository.DeleteById(course.id);
 
                 UpdateCurrentPage();
-
-                /*   List<Course> userCourses = new List<Course>(this.courseRepository.GetAllAuthorCourses(currentUser.id));
-
-                  allCoursesListView.SetSource(userCourses); */
             }
         }
 

@@ -21,13 +21,9 @@ namespace TerminalGUIApp.Windows.LectureWindow
         private TextField searchInput;
         private Label nullReferenceLbl = new Label();
 
-        private Course course;
-        private List<Lecture> lectures;
-
         public OpenLectureAfterCreateDialog()
         {
             this.Title = "All lectures";
-
 
             allLecturesListView = new ListView(new List<Lecture>())
             {
@@ -215,12 +211,6 @@ namespace TerminalGUIApp.Windows.LectureWindow
             Application.RequestStop();
         }
 
-        /*   public void SetLectureList(List<Lecture> lectures)
-          {
-              this.lectures = lectures;
-              this.allLecturesListView.SetSource(lectures);
-          } */
-
         private void OnOpenLecture(ListViewItemEventArgs args)
         {
             Lecture lecture = (Lecture)args.Value;
@@ -241,10 +231,6 @@ namespace TerminalGUIApp.Windows.LectureWindow
                 if (editedLecture != null)
                 {
                     this.temporaryLectureRepository.Update(editedLecture.id, editedLecture);
-
-                    /*     this.lectures[this.lectures.FindIndex(ind => ind.topic.Equals(lecture.topic))] = editedLecture;
-
-                this.allLecturesListView.SetSource(lectures); */
                 }
 
                 UpdateCurrentPage();
@@ -255,10 +241,6 @@ namespace TerminalGUIApp.Windows.LectureWindow
                 this.temporaryLectureRepository.DeleteById(lecture.id);
 
                 UpdateCurrentPage();
-
-                /*  this.lectures.Remove(lecture);
-
-                 this.allLecturesListView.SetSource(lectures); */
             }
         }
     }

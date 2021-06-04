@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ProcessData;
 using Terminal.Gui;
 
@@ -13,7 +12,6 @@ namespace TerminalGUIApp
            
             this.allLectures.Visible = false;
         }
-
         public void SetCourse(Course course)
         {
             this.titleInput.Text = course.title;

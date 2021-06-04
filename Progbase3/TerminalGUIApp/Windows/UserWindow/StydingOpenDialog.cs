@@ -58,9 +58,6 @@ namespace TerminalGUIApp.Windows.UserWindow
             unsubscribed.Clicked += OnUnsubscribed;
             this.AddButton(unsubscribed);
 
-            ///////////////
-
-
             prevPageBtn = new Button("Previous page")
             {
                 X = Pos.Percent(35),

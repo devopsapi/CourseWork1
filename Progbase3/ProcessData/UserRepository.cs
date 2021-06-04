@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Data.Sqlite;
-using System.Configuration;
 using System.Collections.Generic;
 
 namespace ProcessData
@@ -16,8 +15,6 @@ namespace ProcessData
             this.connection = connection;
         }
 
-
-
         public bool UserExists(string username)
         {
             connection.Open();
@@ -25,28 +22,6 @@ namespace ProcessData
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT COUNT(*) FROM users WHERE username = $username";
             command.Parameters.AddWithValue("$username", username);
-
-            int countOfFound = (int)(long)command.ExecuteScalar();
-
-            bool isExists = false;
-
-            if (countOfFound != 0)
-            {
-                isExists = true;
-            }
-
-            connection.Close();
-
-            return isExists;
-        }
-
-        public bool UserExistsById(int id)
-        {
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT COUNT(*) FROM users WHERE id = $id";
-            command.Parameters.AddWithValue("$id", id);
 
             int countOfFound = (int)(long)command.ExecuteScalar();
 
@@ -104,65 +79,6 @@ namespace ProcessData
             return ids;
         }
 
-        public int GetSearchPagesCount(int pageSize, string searchValue)
-        {
-            if (pageSize < 1)
-            {
-                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
-            }
-
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT COUNT(*) FROM users 
-                                    WHERE username LIKE '%' || $searchValue || '%'
-                                    OR fullname LIKE '%' || $searchValue || '%'";
-            command.Parameters.AddWithValue("$searchValue", searchValue);
-
-            int totalFound = (int)(long)command.ExecuteScalar();
-
-            connection.Close();
-
-            int totalSearchPages = (int)Math.Ceiling((float)totalFound / (float)pageSize);
-
-            return totalSearchPages;
-        }
-
-        public List<User> GetSearchPage(string searchValue, int pageNum, int pageSize)
-        {
-            if (pageNum < 1)
-            {
-                throw new ArgumentOutOfRangeException($"Page '{pageNum}' out of range");
-            }
-
-            if (pageSize < 1)
-            {
-                throw new ArgumentOutOfRangeException($"Page size can not be '{pageSize}'");
-            }
-
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-
-            command.CommandText = @"SELECT * FROM users 
-                                    WHERE username LIKE '%' || $searchValue || '%'
-                                    OR fullname LIKE '%' || $searchValue || '%'
-                                    LIMIT $skip,$countOfOut";
-            command.Parameters.AddWithValue("$searchValue", searchValue);
-            command.Parameters.AddWithValue("$skip", (pageNum - 1) * pageSize);
-            command.Parameters.AddWithValue("$countOfOut", pageSize);
-
-            SqliteDataReader reader = command.ExecuteReader();
-
-            List<User> searchPage = ReadUsers(reader);
-
-            reader.Close();
-
-            connection.Close();
-
-            return searchPage;
-        }
-
         public int Insert(User user)
         {
             connection.Open();
@@ -189,34 +105,6 @@ namespace ProcessData
             return insertedId;
         }
 
-        public int InsertImport(User user)
-        {
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-
-            command.CommandText =
-            @"
-                INSERT INTO users (id, username, password, fullname, createdAt, imported) 
-                VALUES ($id, $username, $password, $fullname, $createdAt, $imported, );
-
-                SELECT last_insert_rowid();
-            ";
-
-            command.Parameters.AddWithValue("$id", user.id);
-            command.Parameters.AddWithValue("$username", user.username);
-            command.Parameters.AddWithValue("$password", user.password);
-            command.Parameters.AddWithValue("$fullname", user.fullname);
-            command.Parameters.AddWithValue("$createdAt", user.createdAt.ToString("o"));
-            command.Parameters.AddWithValue("$imported", user.imported ? 1 : 0);
-
-            int insertedId = (int)(long)command.ExecuteScalar();
-
-            connection.Close();
-
-            return insertedId;
-        }
-
         public User GetByUsername(string username)
         {
             connection.Open();
@@ -224,30 +112,6 @@ namespace ProcessData
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM users WHERE username = $username";
             command.Parameters.AddWithValue("$username", username);
-
-            SqliteDataReader reader = command.ExecuteReader();
-
-            User user = null;
-
-            if (reader.Read())
-            {
-                user = ReadUser(reader);
-            }
-
-            reader.Close();
-
-            connection.Close();
-
-            return user;
-        }
-
-        public User GetById(int id)
-        {
-            connection.Open();
-
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM users WHERE id = $id";
-            command.Parameters.AddWithValue("$id", id);
 
             SqliteDataReader reader = command.ExecuteReader();
 
@@ -314,8 +178,6 @@ namespace ProcessData
 
             return isDeleted;
         }
-
-
 
         private static List<User> ReadUsers(SqliteDataReader reader)
         {

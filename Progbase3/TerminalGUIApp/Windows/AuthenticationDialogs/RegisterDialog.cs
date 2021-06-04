@@ -9,12 +9,10 @@ namespace TerminalGUIApp.Windows.AuthenticationDialogs
     {
         private UserRepository userRepository;
         private Authentication authentication;
-
         private TextField userUsernameInput;
         private TextField userPasswordInput;
         private TextField userConfirmPasswordInput;
         private TextField userFullnameInput;
-
 
         public RegisterDialog()
         {

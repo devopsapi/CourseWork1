@@ -1,22 +1,21 @@
 using System;
 using ProcessData;
 using Terminal.Gui;
+using TerminalGUIApp.Windows.UserWindows;
 
 namespace TerminalGUIApp
 {
     public class EditUserAccountDialog : Dialog
     {
+        public bool accepted;
         public bool edited;
         private User user;
-        private TextField userId;
-        private TextField createdAt;
         private TextField fullnameInput;
         private TextField usernameInput;
-        private TextField subscribed;
         private UserRepository userRepository;
         private CourseRepository courseRepository;
         private UsersAndCoursesRepository usersAndCoursesRepository;
-
+        private Button changePasswordBtn;
         public EditUserAccountDialog()
         {
             this.Title = "User information";
@@ -48,6 +47,15 @@ namespace TerminalGUIApp
             };
             this.Add(fullnameLbl, fullnameInput);
 
+            changePasswordBtn = new Button("Change password")
+            {
+                X = Pos.Right(fullnameInput) + Pos.Percent(3),
+                Y = Pos.Top(fullnameInput),
+                AutoSize = true,
+            };
+            changePasswordBtn.Clicked += OnOpenChangePassDialog;
+            this.Add(changePasswordBtn);
+
 
             Button cancelBtn = new Button("Cancel");
             cancelBtn.Clicked += OnDialogCancel;
@@ -58,6 +66,18 @@ namespace TerminalGUIApp
             this.AddButton(oklBtn);
 
         }
+
+        private void OnOpenChangePassDialog()
+        {
+            ChangePassDialog dialog = new ChangePassDialog();
+            Application.Run(dialog);
+
+            if (dialog.passChanged)
+            {
+                accepted = true;
+            }
+        }
+
 
         public User GetEditedUser()
         {
@@ -87,7 +107,7 @@ namespace TerminalGUIApp
         {
             this.usernameInput.Text = user.username;
             this.fullnameInput.Text = user.fullname;
-            
+
             this.user = user;
         }
 

@@ -20,31 +20,15 @@ namespace TerminalGUIApp
             UsersAndCoursesRepository usersAndCoursesRepository = new UsersAndCoursesRepository(databasePath);
             TemporaryLectureRepository temporaryLectureRepository = new TemporaryLectureRepository(databasePath);
 
-            User user = new User();
-            user = new User();
-            user.id = 182;
-            user.username = "hello";
-            user.fullname = "Max Litva";
-            user.password = "1231231";
-            user.createdAt = DateTime.Now;
-            user.imported = false;
-
-
             Application.Init();
             Toplevel top = Application.Top;
 
             MainWindow window = new MainWindow();
             window.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository, temporaryLectureRepository);
 
-            /* UserMainWindow window = new UserMainWindow();
-            window.SetUser(user);
-
-            window.SetRepositories(userRepository, courseRepository, lectureRepository, usersAndCoursesRepository, temporaryLectureRepository);
- */
             top.Add(window);
 
             Application.Run();
-
         }
     }
 }

@@ -20,13 +20,9 @@ namespace TerminalGUIApp
         private User user;
         protected TextField titleInput;
         protected TextField descriptionInput;
-        protected DateField courseCreatedAtDateField;
         protected TextField authorInput;
-        protected TextField subscribers;
-        protected TextField rating;
         protected TextField priceInput;
         protected CheckBox isPrivateCheckBox;
-        protected TextField courseUserIdInput;
 
         public CreateCourseDialog()
         {
@@ -130,10 +126,7 @@ namespace TerminalGUIApp
                 OpenLectureAfterCreateDialog dialog = new OpenLectureAfterCreateDialog();
                 dialog.canBeEditedAndDeleted = true;
                 dialog.SetRepository(this.temporaryLectureRepository);
-                //  dialog.SetLectureList(this.list);
                 Application.Run(dialog);
-
-
             }
         }
 
@@ -201,18 +194,8 @@ namespace TerminalGUIApp
             Application.RequestStop();
         }
 
-        /*   public void SetLectureList(List<Lecture> lectures)
-          {
-              this.list = lectures;
-          } */
-
         private void OnCreateDialogSubmit()
         {
-            if (justCreated)
-            {
-                MessageBox.ErrorQuery("Create course", "Course must have at least 1 lecture.Add lectures first", "OK");
-                return;
-            }
 
             this.canceled = false;
 

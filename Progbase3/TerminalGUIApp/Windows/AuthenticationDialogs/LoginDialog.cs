@@ -7,15 +7,11 @@ namespace TerminalGUIApp.Windows.AuthenticationDialogs
     public class LoginDialog : Dialog
     {
         private User user;
-
         public bool logged;
-
         private UserRepository userRepository;
         private Authentication authentication;
-
         private TextField usernameInput;
         private TextField passwordInput;
-
 
         public LoginDialog()
         {
